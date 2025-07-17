@@ -108,12 +108,18 @@ export async function getActivityStats(): Promise<{
   return totalStats;
 }
 
-export async function getCategoryStats() {
+export async function getCategoryStats(): Promise<
+  Array<{
+    category: string;
+    count: number;
+    avgScore: number;
+  }>
+> {
   return await db
     .select({
       category: activities.category,
       count: sql<number>`count(*)::int`,
-      avgScore: sql<number>`avg(${activities.score})::float`,
+      avgScore: sql<number>`COALESCE(avg(${activities.score}), 0)::float`,
     })
     .from(activities)
     .groupBy(activities.category);
@@ -136,6 +142,18 @@ export async function uploadActivitiesWithTransaction(
   uploadData: Omit<NewActivityUpload, "id" | "uploadedAt">,
   activitiesData: ActivityData[]
 ) {
+  if (!uploadData.fileName || !uploadData.totalActivities) {
+    throw new Error(
+      "Invalid upload data: fileName and totalActivities are required"
+    );
+  }
+
+  if (uploadData.totalActivities !== activitiesData.length) {
+    throw new Error(
+      `Mismatch: expected ${uploadData.totalActivities} activities, got ${activitiesData.length}`
+    );
+  }
+
   return await db.transaction(async (tx) => {
     const [upload] = await tx
       .insert(activityUploads)
@@ -144,6 +162,16 @@ export async function uploadActivitiesWithTransaction(
     if (!upload) throw new Error("Failed to create upload record");
 
     if (activitiesData.length === 0) return { upload, insertedActivities: [] };
+
+    for (const activity of activitiesData) {
+      if (!activity.name || !activity.category) {
+        throw new Error(
+          `Invalid activity data: name and category are required for activity: ${JSON.stringify(
+            activity
+          )}`
+        );
+      }
+    }
 
     const activitiesToInsert = activitiesData.map((activity) => ({
       uploadId: upload.id,
@@ -163,12 +191,34 @@ export async function uploadActivitiesWithTransaction(
       .insert(activities)
       .values(activitiesToInsert)
       .returning();
+
+    if (insertedActivities.length !== activitiesData.length) {
+      throw new Error(
+        `Insert failed: expected ${activitiesData.length} activities, inserted ${insertedActivities.length}`
+      );
+    }
+
     return { upload, insertedActivities };
   });
 }
 
 // Clean up old uploads (optional utility)
 export async function deleteActivityUpload(uploadId: string) {
-  // This will cascade delete all related activities
-  await db.delete(activityUploads).where(eq(activityUploads.id, uploadId));
+  if (!uploadId) {
+    throw new Error("Upload ID is required for deletion");
+  }
+
+  const existingUpload = await db
+    .select({ id: activityUploads.id })
+    .from(activityUploads)
+    .where(eq(activityUploads.id, uploadId))
+    .limit(1);
+  if (existingUpload.length === 0) {
+    throw new Error(`Upload with ID ${uploadId} not found`);
+  }
+
+  const result = await db
+    .delete(activityUploads)
+    .where(eq(activityUploads.id, uploadId));
+  return result;
 }

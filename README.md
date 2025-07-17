@@ -71,12 +71,36 @@ Troupe Scraper Web is a **data visualization dashboard** that turns raw activity
 - **Real-time Sync**: Data automatically synchronizes across sessions
 - **Reliable Access**: Your data is always available and backed up
 
-## 🛠️ Getting Started
+## 🗄️ Database Setup
 
 ### Prerequisites
 
+1. Create a [Neon](https://neon.tech) account
+2. Create a new project and database
+3. Copy your connection string
+
 - Node.js 18+
 - npm, yarn, pnpm, or bun
+
+### Configuration
+
+```bash
+# Create environment file
+cp .env.example .env.local
+
+# Add your database URL
+DATABASE_URL="postgresql://username:password@ep-xxx.us-east-2.aws.neon.tech/dbname?sslmode=require"
+```
+
+### Database Migration
+
+```bash
+# Generate and run migrations
+npm run db:generate
+npm run db:migrate
+```
+
+## 🛠️ Getting Started
 
 ### Installation
 
