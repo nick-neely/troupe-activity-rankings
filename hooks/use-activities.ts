@@ -17,13 +17,14 @@ async function fetchActivities(
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch activities");
+    throw new Error(
+      `Failed to fetch activities: ${response.status} ${response.statusText}`
+    );
   }
 
   const data = await response.json();
   return data.activities;
 }
-
 async function uploadActivities(formData: FormData) {
   const response = await fetch("/api/upload", {
     method: "POST",

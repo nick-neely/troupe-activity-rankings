@@ -1,4 +1,4 @@
-import { createActivityUpload, insertActivityBatch } from "@/lib/db/queries";
+import { uploadActivitiesWithTransaction } from "@/lib/db/queries";
 import { type ActivityData } from "@/lib/db/schema";
 import { calculateScore, parseCSVData } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
@@ -13,6 +13,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    if (!file.name.endsWith(".csv") && !file.type.includes("csv")) {
+      return NextResponse.json(
+        { error: "File must be a CSV" },
+        { status: 400 }
+      );
+    }
     // Read and parse CSV data (returns CSVActivityData[])
     const csvText = await file.text();
     const parsedActivities = parseCSVData(csvText);
@@ -30,18 +36,16 @@ export async function POST(request: NextRequest) {
       score: activity.score ?? calculateScore(activity),
     }));
 
-    // Create upload record
-    const upload = await createActivityUpload({
-      fileName: file.name,
-      totalActivities: parsedActivities.length,
-      description: description || undefined,
-    });
-
-    // Insert activities
-    const insertedActivities = await insertActivityBatch(
-      upload.id,
-      dbActivities
-    );
+    // Create upload record and insert activities in a transaction
+    const { upload, insertedActivities } =
+      await uploadActivitiesWithTransaction(
+        {
+          fileName: file.name,
+          totalActivities: parsedActivities.length,
+          description: description || undefined,
+        },
+        dbActivities
+      );
 
     return NextResponse.json(
       {

@@ -149,28 +149,40 @@ export async function getTopActivities(limit: number = 10) {
   }));
 }
 
-// Batch operations for CSV uploads
-export async function insertActivityBatch(
-  uploadId: string,
+// Transactional upload and insert
+export async function uploadActivitiesWithTransaction(
+  uploadData: Omit<NewActivityUpload, "id" | "uploadedAt">,
   activitiesData: ActivityData[]
 ) {
-  if (activitiesData.length === 0) return [];
+  return await db.transaction(async (tx) => {
+    const [upload] = await tx
+      .insert(activityUploads)
+      .values(uploadData)
+      .returning();
+    if (!upload) throw new Error("Failed to create upload record");
 
-  const activitiesToInsert = activitiesData.map((activity) => ({
-    uploadId,
-    name: activity.name,
-    category: activity.category,
-    price: activity.price || "N/A",
-    loveVotes: activity.love_votes,
-    likeVotes: activity.like_votes,
-    passVotes: activity.pass_votes,
-    score: activity.score || 0,
-    groupNames: activity.groupNames,
-    websiteLink: activity.website_link,
-    googleMapsUrl: activity.google_maps_url,
-  }));
+    if (activitiesData.length === 0) return { upload, insertedActivities: [] };
 
-  return await createActivities(activitiesToInsert);
+    const activitiesToInsert = activitiesData.map((activity) => ({
+      uploadId: upload.id,
+      name: activity.name,
+      category: activity.category,
+      price: activity.price || "N/A",
+      loveVotes: activity.love_votes,
+      likeVotes: activity.like_votes,
+      passVotes: activity.pass_votes,
+      score: activity.score || 0,
+      groupNames: activity.groupNames,
+      websiteLink: activity.website_link,
+      googleMapsUrl: activity.google_maps_url,
+    }));
+
+    const insertedActivities = await tx
+      .insert(activities)
+      .values(activitiesToInsert)
+      .returning();
+    return { upload, insertedActivities };
+  });
 }
 
 // Clean up old uploads (optional utility)
