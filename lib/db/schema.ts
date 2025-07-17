@@ -6,7 +6,6 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Activity uploads table - stores metadata about CSV uploads
@@ -38,11 +37,6 @@ export const activities = pgTable("activities", {
 });
 
 // Zod schemas for type safety and validation
-export const insertActivityUploadSchema = createInsertSchema(activityUploads);
-export const selectActivityUploadSchema = createSelectSchema(activityUploads);
-
-export const insertActivitySchema = createInsertSchema(activities);
-export const selectActivitySchema = createSelectSchema(activities);
 
 // TypeScript types
 export type ActivityUpload = typeof activityUploads.$inferSelect;
