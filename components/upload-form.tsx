@@ -1,21 +1,19 @@
 "use client";
 
-import { useActivityStore } from "@/lib/store";
-import { parseCSVData } from "@/lib/utils";
-import { AlertCircle, CheckCircle, Upload } from "lucide-react";
+import { useUploadActivities } from "@/hooks/use-activities";
+import { CheckCircle, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function UploadForm() {
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadStatus, setUploadStatus] = useState<
-    "idle" | "uploading" | "success" | "error"
-  >("idle");
-  const [message, setMessage] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [description, setDescription] = useState("");
   const router = useRouter();
 
-  const setActivities = useActivityStore((state) => state.setActivities);
+  const uploadMutation = useUploadActivities();
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -35,45 +33,77 @@ export function UploadForm() {
     const csvFile = files.find((file) => file.name.endsWith(".csv"));
 
     if (csvFile) {
-      await handleFileUpload(csvFile);
+      setSelectedFile(csvFile);
+      toast.success("File selected!", {
+        description: `${csvFile.name} is ready to upload.`,
+      });
+    } else {
+      toast.error("Invalid file type", {
+        description: "Please select a CSV file.",
+      });
     }
   };
 
-  const handleFileUpload = async (file: File) => {
-    setUploadStatus("uploading");
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.name.endsWith(".csv")) {
+      setSelectedFile(file);
+      toast.success("File selected!", {
+        description: `${file.name} is ready to upload.`,
+      });
+    } else if (file) {
+      toast.error("Invalid file type", {
+        description: "Please select a CSV file.",
+      });
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    if (description.trim()) {
+      formData.append("description", description.trim());
+    }
+
+    // Show loading toast
+    const loadingToast = toast.loading("Uploading activities...", {
+      description: "Processing your CSV file and saving to database.",
+    });
 
     try {
-      const csvText = await file.text();
-      const activities = parseCSVData(csvText);
+      const result = await uploadMutation.mutateAsync(formData);
 
-      if (activities.length === 0) {
-        setUploadStatus("error");
-        setMessage("No valid data found in CSV file");
-        return;
-      }
+      // Dismiss loading toast and show success
+      toast.dismiss(loadingToast);
+      toast.success("Activities uploaded successfully!", {
+        description: `${result.activitiesCount} activities processed and saved to database.`,
+        duration: 3000,
+      });
 
-      // Store the activities in Zustand store
-      setActivities(activities);
+      setSelectedFile(null);
+      setDescription("");
 
-      setUploadStatus("success");
-      setMessage(`Successfully uploaded ${activities.length} activities!`);
+      // Navigate to dashboard after a brief delay to show the toast
+      setTimeout(() => {
+        router.push("/");
+      }, 1500);
     } catch (error) {
-      setUploadStatus("error");
-      setMessage("Failed to process CSV file");
-      console.error("Upload error:", error);
+      // Dismiss loading toast and show error
+      toast.dismiss(loadingToast);
+      console.error("Upload failed:", error);
+      toast.error("Upload failed", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "Please check your CSV format and try again.",
+        duration: 5000,
+      });
     }
   };
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      await handleFileUpload(file);
-    }
-  };
-
-  const handleViewDashboard = () => {
-    router.push("/");
-  };
+  const isUploading = uploadMutation.isPending;
 
   return (
     <div className="space-y-6">
@@ -81,10 +111,8 @@ export function UploadForm() {
         className={`relative border-2 border-dashed rounded-3xl p-12 text-center transition-all duration-200 ${
           isDragging
             ? "border-indigo-400 bg-indigo-50"
-            : uploadStatus === "success"
+            : selectedFile
             ? "border-green-400 bg-green-50"
-            : uploadStatus === "error"
-            ? "border-red-400 bg-red-50"
             : "border-slate-300 hover:border-indigo-400 hover:bg-indigo-50"
         }`}
         onDragOver={handleDragOver}
@@ -92,42 +120,29 @@ export function UploadForm() {
         onDrop={handleDrop}
       >
         <div className="space-y-4">
-          {uploadStatus === "uploading" ? (
+          {isUploading ? (
             <div className="animate-spin w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full mx-auto" />
-          ) : uploadStatus === "success" ? (
+          ) : selectedFile ? (
             <CheckCircle className="w-12 h-12 text-green-600 mx-auto" />
-          ) : uploadStatus === "error" ? (
-            <AlertCircle className="w-12 h-12 text-red-600 mx-auto" />
           ) : (
             <Upload className="w-12 h-12 text-slate-400 mx-auto" />
           )}
 
           <div>
             <h3 className="text-lg font-semibold text-slate-900 mb-2">
-              {uploadStatus === "uploading"
+              {isUploading
                 ? "Processing CSV..."
-                : uploadStatus === "success"
-                ? "Upload Complete!"
-                : uploadStatus === "error"
-                ? "Upload Failed"
+                : selectedFile
+                ? `Selected: ${selectedFile.name}`
                 : "Drop your CSV file here"}
             </h3>
             <p className="text-slate-600">
-              {uploadStatus === "idle" && "or click to browse files"}
+              {!selectedFile && !isUploading && "or click to browse files"}
             </p>
-            {message && (
-              <p
-                className={`mt-2 text-sm ${
-                  uploadStatus === "success" ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {message}
-              </p>
-            )}
           </div>
         </div>
 
-        {uploadStatus === "idle" && (
+        {!selectedFile && !isUploading && (
           <input
             type="file"
             accept=".csv"
@@ -138,17 +153,40 @@ export function UploadForm() {
         )}
       </div>
 
-      {uploadStatus === "success" && (
-        <div className="text-center space-y-4">
-          <button
-            onClick={handleViewDashboard}
-            className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-200"
-          >
-            View Dashboard
-          </button>
-          <p className="text-sm text-slate-500">
-            Your data has been loaded and is ready for analysis!
-          </p>
+      {selectedFile && !isUploading && (
+        <div className="space-y-4">
+          <div>
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-slate-700 mb-1"
+            >
+              Description (optional)
+            </label>
+            <input
+              id="description"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="e.g., Weekend activities for Miami trip"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => setSelectedFile(null)}
+              className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-2xl font-medium hover:bg-slate-50 transition-all duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleUpload}
+              disabled={isUploading}
+              className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isUploading ? "Uploading..." : "Upload Activities"}
+            </button>
+          </div>
         </div>
       )}
     </div>
