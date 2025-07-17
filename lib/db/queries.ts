@@ -1,6 +1,7 @@
 import { desc, eq, sql } from "drizzle-orm";
 import {
   activities,
+  Activity,
   activityUploads,
   db,
   type ActivityData,
@@ -8,6 +9,24 @@ import {
   type NewActivityUpload,
 } from "./index";
 
+// Helper: transform DB row to ActivityData
+function toActivityData(activity: Activity): ActivityData {
+  return {
+    id: activity.id,
+    name: activity.name,
+    category: activity.category,
+    price: activity.price || "N/A",
+    love_votes: activity.loveVotes,
+    like_votes: activity.likeVotes,
+    pass_votes: activity.passVotes,
+    score: activity.score,
+    groupNames: activity.groupNames || undefined,
+    website_link: activity.websiteLink || undefined,
+    google_maps_url: activity.googleMapsUrl || undefined,
+    uploadId: activity.uploadId,
+    createdAt: activity.createdAt,
+  };
+}
 // Activity Upload Operations
 export async function createActivityUpload(
   data: Omit<NewActivityUpload, "id" | "uploadedAt">
@@ -56,22 +75,7 @@ export async function getLatestActivities(): Promise<ActivityData[]> {
     .from(activities)
     .where(eq(activities.uploadId, latestUpload.id));
 
-  // Transform to ActivityData format for frontend compatibility
-  return results.map((activity) => ({
-    id: activity.id,
-    name: activity.name,
-    category: activity.category,
-    price: activity.price || "N/A",
-    love_votes: activity.loveVotes,
-    like_votes: activity.likeVotes,
-    pass_votes: activity.passVotes,
-    score: activity.score,
-    groupNames: activity.groupNames || undefined,
-    website_link: activity.websiteLink || undefined,
-    google_maps_url: activity.googleMapsUrl || undefined,
-    uploadId: activity.uploadId,
-    createdAt: activity.createdAt,
-  }));
+  return results.map(toActivityData);
 }
 
 export async function getAllActivities(): Promise<ActivityData[]> {
@@ -80,33 +84,24 @@ export async function getAllActivities(): Promise<ActivityData[]> {
     .from(activities)
     .orderBy(desc(activities.createdAt));
 
-  // Transform to ActivityData format for frontend compatibility
-  return results.map((activity) => ({
-    id: activity.id,
-    name: activity.name,
-    category: activity.category,
-    price: activity.price || "N/A",
-    love_votes: activity.loveVotes,
-    like_votes: activity.likeVotes,
-    pass_votes: activity.passVotes,
-    score: activity.score,
-    groupNames: activity.groupNames || undefined,
-    website_link: activity.websiteLink || undefined,
-    google_maps_url: activity.googleMapsUrl || undefined,
-    uploadId: activity.uploadId,
-    createdAt: activity.createdAt,
-  }));
+  return results.map(toActivityData);
 }
 
 // Statistics and Analytics
-export async function getActivityStats() {
+export async function getActivityStats(): Promise<{
+  totalActivities: number;
+  totalLoveVotes: number;
+  totalLikeVotes: number;
+  totalPassVotes: number;
+  avgScore: number;
+}> {
   const [totalStats] = await db
     .select({
       totalActivities: sql<number>`count(*)::int`,
-      totalLoveVotes: sql<number>`sum(${activities.loveVotes})::int`,
-      totalLikeVotes: sql<number>`sum(${activities.likeVotes})::int`,
-      totalPassVotes: sql<number>`sum(${activities.passVotes})::int`,
-      avgScore: sql<number>`avg(${activities.score})::float`,
+      totalLoveVotes: sql<number>`COALESCE(sum(${activities.loveVotes}), 0)::int`,
+      totalLikeVotes: sql<number>`COALESCE(sum(${activities.likeVotes}), 0)::int`,
+      totalPassVotes: sql<number>`COALESCE(sum(${activities.passVotes}), 0)::int`,
+      avgScore: sql<number>`COALESCE(avg(${activities.score}), 0)::float`,
     })
     .from(activities);
 
@@ -124,29 +119,16 @@ export async function getCategoryStats() {
     .groupBy(activities.category);
 }
 
-export async function getTopActivities(limit: number = 10) {
+export async function getTopActivities(
+  limit: number = 10
+): Promise<ActivityData[]> {
   const results = await db
     .select()
     .from(activities)
     .orderBy(desc(activities.score))
     .limit(limit);
 
-  // Transform to ActivityData format
-  return results.map((activity) => ({
-    id: activity.id,
-    name: activity.name,
-    category: activity.category,
-    price: activity.price || "N/A",
-    love_votes: activity.loveVotes,
-    like_votes: activity.likeVotes,
-    pass_votes: activity.passVotes,
-    score: activity.score,
-    groupNames: activity.groupNames || undefined,
-    website_link: activity.websiteLink || undefined,
-    google_maps_url: activity.googleMapsUrl || undefined,
-    uploadId: activity.uploadId,
-    createdAt: activity.createdAt,
-  }));
+  return results.map(toActivityData);
 }
 
 // Transactional upload and insert

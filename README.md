@@ -67,9 +67,9 @@ Troupe Scraper Web is a **data visualization dashboard** that turns raw activity
 
 ### 💾 **Persistent Storage**
 
-- **Local Data**: Your uploaded data stays in your browser
-- **No Server Uploads**: Complete privacy - data never leaves your device
-- **Quick Reload**: Return to your analysis anytime
+- **Database Storage**: Activities are persisted in Neon PostgreSQL
+- **Real-time Sync**: Data automatically synchronizes across sessions
+- **Reliable Access**: Your data is always available and backed up
 
 ## 🛠️ Getting Started
 

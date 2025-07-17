@@ -44,6 +44,8 @@ export function useActivities(latest: boolean = false) {
   return useQuery({
     queryKey: latest ? QUERY_KEYS.latestActivities : QUERY_KEYS.activities,
     queryFn: () => fetchActivities(latest),
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 }
 
