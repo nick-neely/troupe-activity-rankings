@@ -1,11 +1,34 @@
 "use client";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { useActivityStore } from "@/lib/store";
 import { Heart, ThumbsUp, TrendingUp } from "lucide-react";
 
 export function StatsCards() {
   const getTotalStats = useActivityStore((state) => state.getTotalStats);
+  const isLoaded = useActivityStore((state) => state.isLoaded);
   const stats = getTotalStats();
+
+  if (!isLoaded) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200"
+          >
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-8 w-16" />
+              </div>
+              <Skeleton className="h-12 w-12 rounded-xl" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const statItems = [
     {
