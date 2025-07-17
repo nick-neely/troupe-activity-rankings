@@ -5,7 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export interface ActivityData {
+// Legacy interface for backward compatibility with CSV parsing
+export interface CSVActivityData {
   name: string;
   category: string;
   price: string;
@@ -18,18 +19,21 @@ export interface ActivityData {
   google_maps_url?: string;
 }
 
-export function calculateScore(activity: ActivityData): number {
+// Re-export the database ActivityData type for convenience
+export type { ActivityData } from "@/lib/db/schema";
+
+export function calculateScore(activity: CSVActivityData): number {
   return (
     activity.love_votes * 2 + activity.like_votes * 1 + activity.pass_votes * -1
   );
 }
 
-export function parseCSVData(csvText: string): ActivityData[] {
+export function parseCSVData(csvText: string): CSVActivityData[] {
   const lines = csvText.trim().split("\n");
 
   return lines.slice(1).map((line) => {
     const values = parseCsvLine(line); // Use the new robust parser
-    const activity: ActivityData = {
+    const activity: CSVActivityData = {
       name: values[0] ? values[0].replace(/^"|"$/g, "") : "", // Remove quotes if present
       category: values[1] ? values[1].replace(/^"|"$/g, "") : "",
       price: values[2] ? values[2].replace(/^"|"$/g, "") : "N/A",

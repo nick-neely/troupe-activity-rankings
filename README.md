@@ -1,12 +1,24 @@
-# 🗳️ Troupe Activity Rankings
+# 🗳️ Troupe Activity Dashboard
 
 > **Transform group decision-making with data-driven activity insights**
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.2.4-black?style=flat-square&logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1.7-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com)
+[![Neon](https://img.shields.io/badge/Database-Neon_PostgreSQL-00D9FF?style=flat-square&logo=postgresql)](https://neon.tech)
+[![Drizzle](https://img.shields.io/badge/ORM-Drizzle-C5F74F?style=flat-square)](https://orm.drizzle.team)
 
-A beautiful, interactive dashboard for analyzing group activity preferences and voting patterns. Help your group make informed decisions about trips, events, and activities based on real data insights.
+A modern web application for analyzing group trip activity data with full database integration using Neon PostgreSQL and Drizzle ORM.
+
+## ✨ Features
+
+- **📊 Interactive Dashboard** - Comprehensive analytics and visualizations
+- **📁 CSV Upload** - Easy data import with validation
+- **🗄️ Database Integration** - Persistent storage with Neon PostgreSQL
+- **🔄 Real-time Sync** - TanStack Query for automatic data synchronization
+- **📈 Advanced Analytics** - Category stats, voting patterns, and budget analysis
+- **📱 Responsive Design** - Works seamlessly on all devices
+- **🎨 Modern UI** - Built with Tailwind CSS and Radix UI components
 
 ## 🎯 What is this?
 
@@ -55,16 +67,40 @@ Troupe Scraper Web is a **data visualization dashboard** that turns raw activity
 
 ### 💾 **Persistent Storage**
 
-- **Local Data**: Your uploaded data stays in your browser
-- **No Server Uploads**: Complete privacy - data never leaves your device
-- **Quick Reload**: Return to your analysis anytime
+- **Database Storage**: Activities are persisted in Neon PostgreSQL
+- **Real-time Sync**: Data automatically synchronizes across sessions
+- **Reliable Access**: Your data is always available and backed up
 
-## 🛠️ Getting Started
+## 🗄️ Database Setup
 
 ### Prerequisites
 
+1. Create a [Neon](https://neon.tech) account
+2. Create a new project and database
+3. Copy your connection string
+
 - Node.js 18+
 - npm, yarn, pnpm, or bun
+
+### Configuration
+
+```bash
+# Create environment file
+cp .env.example .env.local
+
+# Add your database URL
+DATABASE_URL="postgresql://username:password@ep-xxx.us-east-2.aws.neon.tech/dbname?sslmode=require"
+```
+
+### Database Migration
+
+```bash
+# Generate and run migrations
+npm run db:generate
+npm run db:migrate
+```
+
+## 🛠️ Getting Started
 
 ### Installation
 

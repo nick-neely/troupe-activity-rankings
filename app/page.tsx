@@ -5,12 +5,33 @@ import { CategoryChart } from "@/components/category-chart";
 import { EmptyState } from "@/components/empty-state";
 import { StatsCards } from "@/components/stats-cards";
 import { TopActivities } from "@/components/top-activities";
-import { useActivityStore } from "@/lib/store";
+import { useActivities } from "@/hooks/use-activities";
 
 export default function Dashboard() {
-  const { activities, isLoaded } = useActivityStore();
+  const { data: activities, isLoading, error } = useActivities(true); // Get latest activities
 
-  if (!isLoaded || activities.length === 0) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Failed to load activities</p>
+          <p className="text-sm text-gray-500">
+            Please try refreshing the page
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!activities || activities.length === 0) {
     return <EmptyState />;
   }
 

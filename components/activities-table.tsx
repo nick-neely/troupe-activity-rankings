@@ -46,8 +46,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { ActivityData } from "@/lib/db/schema";
 import { useActivityStore } from "@/lib/store";
-import type { ActivityData } from "@/lib/utils";
 
 const columns: ColumnDef<ActivityData>[] = [
   {

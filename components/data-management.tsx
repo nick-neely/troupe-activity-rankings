@@ -1,64 +1,110 @@
-"use client"
+"use client";
 
-import { useActivityStore } from "@/lib/store"
-import { Trash2, Download, BarChart3 } from "lucide-react"
-import Link from "next/link"
+import { useActivities } from "@/hooks/use-activities";
+import { useActivityStore } from "@/lib/store";
+import { BarChart3, Database, Download } from "lucide-react";
+import Link from "next/link";
 
 export function DataManagement() {
-  const { activities, isLoaded, clearActivities, getTotalStats } = useActivityStore()
-  const stats = getTotalStats()
+  const { data: activities, isLoading } = useActivities(true);
+  const { getTotalStats } = useActivityStore();
 
-  const handleClearData = () => {
-    if (confirm("Are you sure you want to clear all activity data? This action cannot be undone.")) {
-      clearActivities()
-    }
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="text-center p-3 bg-slate-50 rounded-2xl">
+                <div className="h-8 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
+
+  if (!activities || activities.length === 0) {
+    return (
+      <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">
+          Data Management
+        </h3>
+        <div className="text-center py-8">
+          <Database className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+          <p className="text-gray-500">No activity data found</p>
+          <p className="text-sm text-gray-400">
+            Upload a CSV file to get started
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const stats = getTotalStats();
 
   const handleExportData = () => {
-    if (activities.length === 0) return
+    if (activities.length === 0) return;
 
     const csvContent = [
-      "name,category,price,love_votes,like_votes,pass_votes,score",
+      "name,category,price,love_votes,like_votes,pass_votes,score,groupNames,website_link,google_maps_url",
       ...activities.map(
         (activity) =>
-          `"${activity.name}","${activity.category}","${activity.price}",${activity.love_votes},${activity.like_votes},${activity.pass_votes},${activity.score}`,
+          `"${activity.name}","${activity.category}","${activity.price}",${
+            activity.love_votes
+          },${activity.like_votes},${activity.pass_votes},${activity.score},"${
+            activity.groupNames || ""
+          }","${activity.website_link || ""}","${
+            activity.google_maps_url || ""
+          }"`
       ),
-    ].join("\n")
+    ].join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `troupe-activities-${new Date().toISOString().split("T")[0]}.csv`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
-
-  if (!isLoaded || activities.length === 0) {
-    return null
-  }
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `troupe-activities-${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-      <h3 className="text-lg font-semibold text-slate-900 mb-4">Current Data</h3>
+      <h3 className="text-lg font-semibold text-slate-900 mb-4">
+        Current Data
+      </h3>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="text-center p-3 bg-slate-50 rounded-2xl">
-          <div className="text-2xl font-bold text-slate-900">{stats.totalActivities}</div>
+          <div className="text-2xl font-bold text-slate-900">
+            {stats.totalActivities}
+          </div>
           <div className="text-sm text-slate-600">Activities</div>
         </div>
         <div className="text-center p-3 bg-slate-50 rounded-2xl">
-          <div className="text-2xl font-bold text-pink-600">{stats.totalLoveVotes}</div>
+          <div className="text-2xl font-bold text-pink-600">
+            {stats.totalLoveVotes}
+          </div>
           <div className="text-sm text-slate-600">Love Votes</div>
         </div>
         <div className="text-center p-3 bg-slate-50 rounded-2xl">
-          <div className="text-2xl font-bold text-green-600">{stats.totalLikeVotes}</div>
+          <div className="text-2xl font-bold text-green-600">
+            {stats.totalLikeVotes}
+          </div>
           <div className="text-sm text-slate-600">Like Votes</div>
         </div>
         <div className="text-center p-3 bg-slate-50 rounded-2xl">
-          <div className="text-2xl font-bold text-slate-900">{stats.avgScore.toFixed(1)}</div>
+          <div className="text-2xl font-bold text-slate-900">
+            {stats.avgScore.toFixed(1)}
+          </div>
           <div className="text-sm text-slate-600">Avg Score</div>
         </div>
       </div>
@@ -79,15 +125,7 @@ export function DataManagement() {
           <Download className="w-4 h-4" />
           Export CSV
         </button>
-
-        <button
-          onClick={handleClearData}
-          className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-2xl text-sm font-medium hover:bg-red-100 transition-colors duration-200"
-        >
-          <Trash2 className="w-4 h-4" />
-          Clear Data
-        </button>
       </div>
     </div>
-  )
+  );
 }
