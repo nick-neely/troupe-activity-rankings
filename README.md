@@ -1,4 +1,4 @@
-# 🗳️ Troupe Scraper Web
+# 🗳️ Troupe Activity Rankings
 
 > **Transform group decision-making with data-driven activity insights**
 
