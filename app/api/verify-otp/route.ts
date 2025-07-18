@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -13,7 +14,10 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-  if (code === sitewideCode) {
+  if (
+    code.length === sitewideCode.length &&
+    timingSafeEqual(Buffer.from(code), Buffer.from(sitewideCode))
+  ) {
     return NextResponse.json({ success: true });
   }
   return NextResponse.json(
