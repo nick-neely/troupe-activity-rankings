@@ -355,34 +355,26 @@ export async function setCategoryIconMapping(
     throw new Error("Category and iconName are required");
   }
 
-  // Try to update existing mapping first
-  const [updated] = await db
-    .update(categoryIconMappings)
-    .set({
-      iconName,
-      updatedAt: new Date(),
-    })
-    .where(eq(categoryIconMappings.category, category))
-    .returning();
-
-  if (updated) {
-    return updated;
-  }
-
-  // If no existing mapping, create new one
-  const [created] = await db
+  const [result] = await db
     .insert(categoryIconMappings)
     .values({
       category,
       iconName,
     })
+    .onConflictDoUpdate({
+      target: categoryIconMappings.category,
+      set: {
+        iconName,
+        updatedAt: new Date(),
+      },
+    })
     .returning();
 
-  if (!created) {
+  if (!result) {
     throw new Error("Failed to create category icon mapping");
   }
 
-  return created;
+  return result;
 }
 
 /**
@@ -430,6 +422,7 @@ export async function initializeDefaultCategoryMappings(): Promise<
   ];
 
   const createdMappings: CategoryIconMapping[] = [];
+  const errors: Array<{ category: string; error: unknown }> = [];
 
   for (const mapping of defaultMappings) {
     const existing = await getCategoryIconMapping(mapping.category);
@@ -445,6 +438,10 @@ export async function initializeDefaultCategoryMappings(): Promise<
           `Failed to create default mapping for ${mapping.category}:`,
           error
         );
+        errors.push({ category: mapping.category, error });
+      }
+      if (errors.length > 0) {
+        console.error("Some default mappings failed to initialize:", errors);
       }
     }
   }
@@ -458,7 +455,7 @@ export async function getCategoryMappingsInitializedFlag(): Promise<boolean> {
     .from(appConfig)
     .where(eq(appConfig.key, "categoryMappingsInitialized"))
     .limit(1);
-  return result.length > 0 && result[0].value === "true";
+  return result.length > 0 && JSON.parse(result[0].value || "false");
 }
 
 export async function setCategoryMappingsInitializedFlag(
@@ -473,14 +470,12 @@ export async function setCategoryMappingsInitializedFlag(
   if (exists.length > 0) {
     await db
       .update(appConfig)
-      .set({ value: value ? "true" : "false" })
+      .set({ value: JSON.stringify(value) })
       .where(eq(appConfig.key, "categoryMappingsInitialized"));
   } else {
-    await db
-      .insert(appConfig)
-      .values({
-        key: "categoryMappingsInitialized",
-        value: value ? "true" : "false",
-      });
+    await db.insert(appConfig).values({
+      key: "categoryMappingsInitialized",
+      value: JSON.stringify(value),
+    });
   }
 }

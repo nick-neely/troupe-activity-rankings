@@ -31,23 +31,27 @@ export const activityUploads = pgTable("activity_uploads", {
 });
 
 // Activities table - stores individual activity records
-export const activities = pgTable("activities", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  uploadId: uuid("upload_id")
-    .references(() => activityUploads.id, { onDelete: "cascade" })
-    .notNull(),
-  name: text("name").notNull(),
-  category: text("category").notNull(),
-  price: text("price").default("N/A"),
-  loveVotes: integer("love_votes").default(0).notNull(),
-  likeVotes: integer("like_votes").default(0).notNull(),
-  passVotes: integer("pass_votes").default(0).notNull(),
-  score: real("score").notNull(), // Calculated score
-  groupNames: text("group_names"),
-  websiteLink: text("website_link"),
-  googleMapsUrl: text("google_maps_url"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const activities = pgTable(
+  "activities",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    uploadId: uuid("upload_id")
+      .references(() => activityUploads.id, { onDelete: "cascade" })
+      .notNull(),
+    name: text("name").notNull(),
+    category: text("category").notNull(),
+    price: text("price").default("N/A"),
+    loveVotes: integer("love_votes").default(0).notNull(),
+    likeVotes: integer("like_votes").default(0).notNull(),
+    passVotes: integer("pass_votes").default(0).notNull(),
+    score: real("score").notNull(), // Calculated score
+    groupNames: text("group_names"),
+    websiteLink: text("website_link"),
+    googleMapsUrl: text("google_maps_url"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [index("idx_activities_category").on(table.category)]
+);
 
 // Category icon mappings table - stores admin-configured category-to-icon mappings
 export const categoryIconMappings = pgTable("category_icon_mappings", {

@@ -90,8 +90,8 @@ export function CategoryIconManager() {
       );
       toast.success("Category icons updated successfully!");
       refetch();
-    } catch {
-      toast.error("Failed to update category icons. Please try again.");
+    } catch (error) {
+      console.error("Failed to update category icons:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -182,6 +182,7 @@ export function CategoryIconManager() {
                     size="sm"
                     className="rounded-xl border-slate-300"
                     disabled={isSubmitting}
+                    aria-label={`Change icon for ${category} category`}
                   >
                     Change Icon
                   </Button>

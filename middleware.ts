@@ -44,7 +44,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/upload/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/api/upload/:path*",
+    "/api/category-mappings/:path*",
+  ],
 };
 
 export const runtime = "nodejs";

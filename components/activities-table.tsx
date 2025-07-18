@@ -59,105 +59,51 @@ const categoryColors: Record<string, string> = {
 
 import { useActivityStore } from "@/lib/store";
 
-// Dynamic icon mapping for categories
-const iconMap: Record<
-  string,
-  React.LazyExoticComponent<React.ComponentType<{ className?: string }>>
-> = {
-  UtensilsCrossed: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.UtensilsCrossed }))
-  ),
-  Music: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Music }))
-  ),
-  Zap: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Zap }))
-  ),
-  Trees: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Trees }))
-  ),
-  Heart: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Heart }))
-  ),
-  Tag: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Tag }))
-  ),
-  Coffee: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Coffee }))
-  ),
-  Pizza: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Pizza }))
-  ),
-  ChefHat: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.ChefHat }))
-  ),
-  IceCream: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.IceCream }))
-  ),
-  Gamepad2: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Gamepad2 }))
-  ),
-  Film: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Film }))
-  ),
-  Ticket: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Ticket }))
-  ),
-  Palette: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Palette }))
-  ),
-  Dumbbell: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Dumbbell }))
-  ),
-  Bike: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Bike }))
-  ),
-  Book: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Book }))
-  ),
-  Mountain: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Mountain }))
-  ),
-  Waves: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Waves }))
-  ),
-  Sun: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Sun }))
-  ),
-  Tent: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Tent }))
-  ),
-  Car: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Car }))
-  ),
-  Plane: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Plane }))
-  ),
-  Camera: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Camera }))
-  ),
-  ShoppingBag: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.ShoppingBag }))
-  ),
-  Sparkles: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Sparkles }))
-  ),
-  Crown: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Crown }))
-  ),
-  Gift: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Gift }))
-  ),
-  Trophy: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Trophy }))
-  ),
-  Star: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Star }))
-  ),
-  Flame: React.lazy(() =>
-    import("lucide-react").then((m) => ({ default: m.Flame }))
-  ),
-};
+// Generate icon map dynamically
+const iconNames = [
+  "UtensilsCrossed",
+  "Music",
+  "Zap",
+  "Trees",
+  "Heart",
+  "Tag",
+  "Coffee",
+  "Pizza",
+  "ChefHat",
+  "IceCream",
+  "Gamepad2",
+  "Film",
+  "Ticket",
+  "Palette",
+  "Dumbbell",
+  "Bike",
+  "Book",
+  "Mountain",
+  "Waves",
+  "Sun",
+  "Tent",
+  "Car",
+  "Plane",
+  "Camera",
+  "ShoppingBag",
+  "Sparkles",
+  "Crown",
+  "Gift",
+  "Trophy",
+  "Star",
+  "Flame",
+] as const;
+
+const iconMap = iconNames.reduce((acc, iconName) => {
+  acc[iconName] = React.lazy(() =>
+    import("lucide-react").then((module) => ({
+      default: module[iconName as keyof typeof module] as React.ComponentType<{
+        className?: string;
+      }>,
+    }))
+  );
+  return acc;
+}, {} as Record<string, React.LazyExoticComponent<React.ComponentType<{ className?: string }>>>);
 
 // Category icon cell component
 function CategoryIconCell({
@@ -181,7 +127,7 @@ function CategoryIconCell({
   // Extract text color from colorClass (e.g., 'text-orange-800')
   const textColorClass = React.useMemo(() => {
     if (!colorClass) return "text-slate-600";
-    const match = colorClass.match(/text-\w+-\d+/);
+    const match = colorClass.match(/text-[\w]+-\d{3}/);
     return match ? match[0] : "text-slate-600";
   }, [colorClass]);
 

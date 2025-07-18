@@ -32,8 +32,14 @@ async function updateCategoryMapping(category: string, iconName: string) {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to update category mapping");
+    let errorMessage = "Failed to update category mapping";
+    try {
+      const error = await response.json();
+      errorMessage = error.error || errorMessage;
+    } catch {
+      // If response is not JSON, use default message
+    }
+    throw new Error(errorMessage);
   }
   return response.json();
 }

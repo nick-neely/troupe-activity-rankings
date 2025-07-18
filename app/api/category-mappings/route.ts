@@ -43,14 +43,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (typeof category !== "string" || category.trim().length === 0) {
+    const trimmedCategory = category.trim();
+    if (typeof category !== "string" || trimmedCategory.length === 0) {
       return NextResponse.json(
         { error: "Category must be a non-empty string" },
         { status: 400 }
       );
     }
 
-    if (typeof iconName !== "string" || iconName.trim().length === 0) {
+    const trimmedIconName = iconName.trim();
+    if (typeof iconName !== "string" || trimmedIconName.length === 0) {
       return NextResponse.json(
         { error: "IconName must be a non-empty string" },
         { status: 400 }
