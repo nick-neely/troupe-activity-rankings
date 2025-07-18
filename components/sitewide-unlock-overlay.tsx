@@ -8,6 +8,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { Loader } from "lucide-react";
 
 import { useUnlockStore } from "@/lib/store";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
@@ -94,10 +95,10 @@ export function SitewideUnlockOverlay() {
           >
             {loading ? (
               <span className="flex items-center gap-2 justify-center">
-                <span
-                  className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-1"
+                <Loader
+                  className="animate-spin text-white w-5 h-5 mr-1"
                   aria-hidden="true"
-                ></span>
+                />
                 Unlocking...
               </span>
             ) : (
