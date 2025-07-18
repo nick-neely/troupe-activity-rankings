@@ -160,6 +160,24 @@
 }
 
 @layer base {
+  @keyframes caret-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    40% {
+      opacity: 1;
+    }
+    60% {
+      opacity: 0;
+    }
+    80% {
+      opacity: 1;
+    }
+  }
+  .animate-caret-blink {
+    animation: caret-blink 1.2s linear infinite;
+  }
   * {
     @apply border-border outline-ring/50;
   }
