@@ -1,12 +1,15 @@
+import bcrypt from "bcrypt";
 import { desc, eq, sql } from "drizzle-orm";
 import {
   activities,
   Activity,
   activityUploads,
   db,
+  users,
   type ActivityData,
   type NewActivity,
   type NewActivityUpload,
+  type User,
 } from "./index";
 
 // Helper: transform DB row to ActivityData
@@ -202,7 +205,14 @@ export async function uploadActivitiesWithTransaction(
   });
 }
 
-// Clean up old uploads (optional utility)
+/**
+ * Deletes an activity upload record by its ID.
+ *
+ * Throws an error if the upload ID is missing or if the upload does not exist.
+ *
+ * @param uploadId - The unique identifier of the activity upload to delete
+ * @returns The result of the deletion operation
+ */
 export async function deleteActivityUpload(uploadId: string) {
   if (!uploadId) {
     throw new Error("Upload ID is required for deletion");
@@ -221,4 +231,93 @@ export async function deleteActivityUpload(uploadId: string) {
     .delete(activityUploads)
     .where(eq(activityUploads.id, uploadId));
   return result;
+}
+
+/**
+ * Creates a new user with the specified username and password.
+ *
+ * The password is securely hashed before storage.
+ *
+ * @param username - The username for the new user
+ * @param password - The plaintext password for the new user
+ * @returns The created user record
+ */
+export async function createUser(username: string, password: string) {
+  const saltRounds = 12;
+  const passwordHash = await bcrypt.hash(password, saltRounds);
+
+  const [user] = await db
+    .insert(users)
+    .values({
+      username,
+      passwordHash,
+    })
+    .returning();
+
+  return user;
+}
+
+/**
+ * Retrieves a user by their username.
+ *
+ * @param username - The username to search for
+ * @returns The user object if found, otherwise null
+ */
+export async function getUserByUsername(
+  username: string
+): Promise<User | null> {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.username, username))
+    .limit(1);
+
+  return user || null;
+}
+
+/**
+ * Verifies a user's password and returns the user if authentication succeeds.
+ *
+ * Retrieves the user by username and compares the provided password with the stored password hash. Returns the user object if the password is valid; otherwise, returns null.
+ *
+ * @param username - The username of the user to authenticate
+ * @param password - The plaintext password to verify
+ * @returns The authenticated user if the password is correct, or null if authentication fails
+ */
+export async function validateUserPassword(
+  username: string,
+  password: string
+): Promise<User | null> {
+  const user = await getUserByUsername(username);
+  if (!user) return null;
+
+  const isValid = await bcrypt.compare(password, user.passwordHash);
+  return isValid ? user : null;
+}
+
+/**
+ * Ensures that an admin user exists by creating one with a default password if necessary.
+ *
+ * If an admin user already exists, returns the existing user. If not, creates an admin user using the password from the `ADMIN_DEFAULT_PASSWORD` environment variable. Throws an error if the environment variable is not set.
+ *
+ * @returns The existing or newly created admin user
+ */
+export async function initializeAdminUser() {
+  const existingUser = await getUserByUsername("admin");
+  if (existingUser) {
+    console.log("Admin user already exists");
+    return existingUser;
+  }
+
+  // Get default password from env or parameter
+  const defaultPassword = process.env.ADMIN_DEFAULT_PASSWORD;
+  if (!defaultPassword) {
+    throw new Error("ADMIN_DEFAULT_PASSWORD environment variable is not set");
+  }
+  const adminUser = await createUser("admin", defaultPassword);
+  console.log(
+    "Admin user created with username 'admin'. Please change the password after first login."
+  );
+  // Do not log the password
+  return adminUser;
 }

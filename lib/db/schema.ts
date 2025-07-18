@@ -1,4 +1,5 @@
 import {
+  index,
   integer,
   pgTable,
   real,
@@ -7,6 +8,18 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { z } from "zod";
+
+// Users table - stores admin user credentials
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    username: text("username").unique().notNull(),
+    passwordHash: text("password_hash").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [index("idx_users_username").on(table.username)]
+);
 
 // Activity uploads table - stores metadata about CSV uploads
 export const activityUploads = pgTable("activity_uploads", {
@@ -36,9 +49,10 @@ export const activities = pgTable("activities", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// Zod schemas for type safety and validation
-
 // TypeScript types
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
 export type ActivityUpload = typeof activityUploads.$inferSelect;
 export type NewActivityUpload = typeof activityUploads.$inferInsert;
 
@@ -76,3 +90,11 @@ export const csvActivitySchema = z.object({
 });
 
 export type CsvActivityData = z.infer<typeof csvActivitySchema>;
+
+// Login validation schema
+export const loginSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export type LoginData = z.infer<typeof loginSchema>;
