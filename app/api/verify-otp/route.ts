@@ -6,7 +6,10 @@ export async function POST(request: Request) {
 
   const sitewideCode = process.env.SITEWIDE_CODE;
   if (!sitewideCode) {
-    throw new Error("SITEWIDE_CODE environment variable is not set.");
+    return NextResponse.json(
+      { success: false, error: "Server configuration error." },
+      { status: 500 }
+    );
   }
   if (typeof code !== "string" || code.length < 6) {
     return NextResponse.json(
