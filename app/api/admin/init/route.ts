@@ -20,8 +20,9 @@ export async function POST() {
         username: user.username,
       },
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error("Initialize admin error:", error);
+    console.error("Initialize admin error: Failed to initialize admin user");
     return NextResponse.json(
       { error: "Failed to initialize admin user" },
       { status: 500 }

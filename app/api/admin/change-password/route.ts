@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
 
     // Optionally, force logout by clearing the cookie (client should redirect to login)
     const response = NextResponse.json({ success: true });
-    clearAuthCookie();
+    await clearAuthCookie();
     return response;
   } catch (error) {
     console.error("Change password error:", error);
