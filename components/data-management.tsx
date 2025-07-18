@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminChangePasswordForm } from "@/components/admin-change-password";
 import { useActivities } from "@/hooks/use-activities";
 import { useActivityStore } from "@/lib/store";
 import { BarChart3, Database, Download } from "lucide-react";
@@ -79,7 +80,7 @@ export function DataManagement() {
   return (
     <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
       <h3 className="text-lg font-semibold text-slate-900 mb-4">
-        Current Data
+        Data Management
       </h3>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -125,6 +126,10 @@ export function DataManagement() {
           <Download className="w-4 h-4" />
           Export CSV
         </button>
+      </div>
+
+      <div className="mt-8">
+        <AdminChangePasswordForm />
       </div>
     </div>
   );

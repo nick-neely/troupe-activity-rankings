@@ -1,12 +1,15 @@
+import bcrypt from "bcrypt";
 import { desc, eq, sql } from "drizzle-orm";
 import {
   activities,
   Activity,
   activityUploads,
   db,
+  users,
   type ActivityData,
   type NewActivity,
   type NewActivityUpload,
+  type User,
 } from "./index";
 
 // Helper: transform DB row to ActivityData
@@ -221,4 +224,64 @@ export async function deleteActivityUpload(uploadId: string) {
     .delete(activityUploads)
     .where(eq(activityUploads.id, uploadId));
   return result;
+}
+
+// User Operations
+export async function createUser(username: string, password: string) {
+  const saltRounds = 12;
+  const passwordHash = await bcrypt.hash(password, saltRounds);
+
+  const [user] = await db
+    .insert(users)
+    .values({
+      username,
+      passwordHash,
+    })
+    .returning();
+
+  return user;
+}
+
+export async function getUserByUsername(
+  username: string
+): Promise<User | null> {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.username, username))
+    .limit(1);
+
+  return user || null;
+}
+
+export async function validateUserPassword(
+  username: string,
+  password: string
+): Promise<User | null> {
+  const user = await getUserByUsername(username);
+  if (!user) return null;
+
+  const isValid = await bcrypt.compare(password, user.passwordHash);
+  return isValid ? user : null;
+}
+
+// Initialize admin user (run once)
+export async function initializeAdminUser() {
+  const existingUser = await getUserByUsername("admin");
+  if (existingUser) {
+    console.log("Admin user already exists");
+    return existingUser;
+  }
+
+  // Get default password from env or parameter
+  const defaultPassword = process.env.ADMIN_DEFAULT_PASSWORD;
+  if (!defaultPassword) {
+    throw new Error("ADMIN_DEFAULT_PASSWORD environment variable is not set");
+  }
+  const adminUser = await createUser("admin", defaultPassword);
+  console.log(
+    "Admin user created with username 'admin'. Please change the password after first login."
+  );
+  // Do not log the password
+  return adminUser;
 }
