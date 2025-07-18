@@ -49,7 +49,7 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
     };
     return payload;
   } catch (error) {
-    console.log("Token verification failed:", error);
+    console.error("Token verification failed:", error);
     return null;
   }
 }

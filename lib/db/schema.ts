@@ -49,6 +49,21 @@ export const activities = pgTable("activities", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Category icon mappings table - stores admin-configured category-to-icon mappings
+export const categoryIconMappings = pgTable("category_icon_mappings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  category: text("category").notNull().unique(),
+  iconName: text("icon_name").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// App configuration table - stores persistent flags and settings
+export const appConfig = pgTable("app_config", {
+  key: text("key").primaryKey(),
+  value: text("value"),
+});
+
 // TypeScript types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -58,6 +73,9 @@ export type NewActivityUpload = typeof activityUploads.$inferInsert;
 
 export type Activity = typeof activities.$inferSelect;
 export type NewActivity = typeof activities.$inferInsert;
+
+export type CategoryIconMapping = typeof categoryIconMappings.$inferSelect;
+export type NewCategoryIconMapping = typeof categoryIconMappings.$inferInsert;
 
 // Custom types for frontend compatibility
 export type ActivityData = {

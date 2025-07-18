@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminChangePasswordForm } from "@/components/admin-change-password";
+import { CategoryIconManager } from "@/components/category-icon-manager";
 import { useActivities } from "@/hooks/use-activities";
 import { useActivityStore } from "@/lib/store";
 import { BarChart3, Database, Download } from "lucide-react";
@@ -133,7 +134,8 @@ export function DataManagement() {
         </button>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8 space-y-6">
+        <CategoryIconManager />
         <AdminChangePasswordForm />
       </div>
     </div>

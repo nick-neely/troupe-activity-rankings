@@ -22,6 +22,20 @@
       "when": 1752804451509,
       "tag": "0002_calm_shockwave",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1752869126901,
+      "tag": "0003_slim_red_hulk",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1752870384291,
+      "tag": "0004_overrated_swarm",
+      "breakpoints": true
     }
   ]
 }

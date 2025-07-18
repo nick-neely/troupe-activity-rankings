@@ -27,7 +27,6 @@ import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -46,31 +45,171 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useCategoryMappings } from "@/hooks/use-category-mappings";
 import type { ActivityData } from "@/lib/db/schema";
+
+// Category color mapping for badges and icons
+const categoryColors: Record<string, string> = {
+  Food: "bg-orange-100 text-orange-800 border-orange-200",
+  Entertainment: "bg-purple-100 text-purple-800 border-purple-200",
+  Recreation: "bg-blue-100 text-blue-800 border-blue-200",
+  Outdoors: "bg-green-100 text-green-800 border-green-200",
+  Wellness: "bg-pink-100 text-pink-800 border-pink-200",
+};
+
 import { useActivityStore } from "@/lib/store";
 
+// Dynamic icon mapping for categories
+const iconMap: Record<
+  string,
+  React.LazyExoticComponent<React.ComponentType<{ className?: string }>>
+> = {
+  UtensilsCrossed: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.UtensilsCrossed }))
+  ),
+  Music: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Music }))
+  ),
+  Zap: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Zap }))
+  ),
+  Trees: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Trees }))
+  ),
+  Heart: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Heart }))
+  ),
+  Tag: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Tag }))
+  ),
+  Coffee: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Coffee }))
+  ),
+  Pizza: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Pizza }))
+  ),
+  ChefHat: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.ChefHat }))
+  ),
+  IceCream: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.IceCream }))
+  ),
+  Gamepad2: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Gamepad2 }))
+  ),
+  Film: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Film }))
+  ),
+  Ticket: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Ticket }))
+  ),
+  Palette: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Palette }))
+  ),
+  Dumbbell: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Dumbbell }))
+  ),
+  Bike: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Bike }))
+  ),
+  Book: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Book }))
+  ),
+  Mountain: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Mountain }))
+  ),
+  Waves: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Waves }))
+  ),
+  Sun: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Sun }))
+  ),
+  Tent: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Tent }))
+  ),
+  Car: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Car }))
+  ),
+  Plane: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Plane }))
+  ),
+  Camera: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Camera }))
+  ),
+  ShoppingBag: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.ShoppingBag }))
+  ),
+  Sparkles: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Sparkles }))
+  ),
+  Crown: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Crown }))
+  ),
+  Gift: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Gift }))
+  ),
+  Trophy: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Trophy }))
+  ),
+  Star: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Star }))
+  ),
+  Flame: React.lazy(() =>
+    import("lucide-react").then((m) => ({ default: m.Flame }))
+  ),
+};
+
+// Category icon cell component
+function CategoryIconCell({
+  activity,
+  colorClass,
+}: {
+  activity: ActivityData;
+  colorClass?: string;
+}) {
+  const { data: mappings } = useCategoryMappings();
+
+  // Memoize mapping lookup for iconName
+  const iconName = React.useMemo(() => {
+    if (!mappings) return "Tag";
+    const mapping = mappings.find((m) => m.category === activity.category);
+    return mapping?.iconName || "Tag";
+  }, [mappings, activity.category]);
+
+  const IconComponent = iconMap[iconName] || iconMap["Tag"];
+
+  // Extract text color from colorClass (e.g., 'text-orange-800')
+  const textColorClass = React.useMemo(() => {
+    if (!colorClass) return "text-slate-600";
+    const match = colorClass.match(/text-\w+-\d+/);
+    return match ? match[0] : "text-slate-600";
+  }, [colorClass]);
+
+  return (
+    <div className="flex justify-center" title={activity.category}>
+      <React.Suspense
+        fallback={<span className={`h-5 w-5 ${textColorClass}`} />}
+      >
+        <IconComponent className={`h-5 w-5 ${textColorClass}`} />
+      </React.Suspense>
+    </div>
+  );
+}
 const columns: ColumnDef<ActivityData>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="rounded-lg"
-      />
+    id: "categoryIcon",
+    header: () => (
+      <div className="flex justify-center">
+        <span className="font-semibold">Category</span>
+      </div>
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="rounded-lg"
-      />
-    ),
+    cell: ({ row }) => {
+      const activity = row.original;
+      const colorClass =
+        categoryColors[activity.category] ||
+        "bg-slate-100 text-slate-800 border-slate-200";
+      return <CategoryIconCell activity={activity} colorClass={colorClass} />;
+    },
     enableSorting: false,
     enableHiding: false,
   },
@@ -110,21 +249,13 @@ const columns: ColumnDef<ActivityData>[] = [
     },
     cell: ({ row }) => {
       const category = row.getValue("category") as string;
-      const categoryColors: Record<string, string> = {
-        Food: "bg-orange-100 text-orange-800 border-orange-200",
-        Entertainment: "bg-purple-100 text-purple-800 border-purple-200",
-        Recreation: "bg-blue-100 text-blue-800 border-blue-200",
-        Outdoors: "bg-green-100 text-green-800 border-green-200",
-        Wellness: "bg-pink-100 text-pink-800 border-pink-200",
-      };
-
+      const colorClass =
+        categoryColors[category] ||
+        "bg-slate-100 text-slate-800 border-slate-200";
       return (
         <Badge
           variant="outline"
-          className={`rounded-xl font-medium ${
-            categoryColors[category] ||
-            "bg-slate-100 text-slate-800 border-slate-200"
-          }`}
+          className={`rounded-xl font-medium ${colorClass}`}
         >
           {category}
         </Badge>
@@ -433,6 +564,7 @@ const columns: ColumnDef<ActivityData>[] = [
 
 export function ActivitiesTable() {
   const activities = useActivityStore((state) => state.activities);
+
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "score", desc: true }, // Default sort by score descending
   ]);
@@ -445,7 +577,6 @@ export function ActivitiesTable() {
       website_link: false, // Hide by default
       google_maps_url: false, // Hide by default
     });
-  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data: activities,
@@ -457,12 +588,10 @@ export function ActivitiesTable() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
     },
     initialState: {
       pagination: {
