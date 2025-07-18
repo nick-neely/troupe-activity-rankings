@@ -5,6 +5,11 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
 
+/**
+ * Renders a form for admins to change their password.
+ *
+ * Submits the current and new passwords to the server, displays success or error notifications, and redirects to the admin login page upon successful password change.
+ */
 export function AdminChangePasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");

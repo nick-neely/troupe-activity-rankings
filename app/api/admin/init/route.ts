@@ -1,6 +1,11 @@
 import { initializeAdminUser } from "@/lib/db/queries";
 import { NextResponse } from "next/server";
 
+/**
+ * Handles POST requests to initialize an admin user in non-production environments.
+ *
+ * Returns a JSON response with the admin user's ID and username on success. In production, returns a 403 Forbidden error. On failure, returns a 500 Internal Server Error with an error message.
+ */
 export async function POST() {
   try {
     // Only allow this in development

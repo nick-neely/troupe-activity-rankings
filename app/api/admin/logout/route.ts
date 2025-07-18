@@ -1,6 +1,11 @@
 import { clearAuthCookie } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
+/**
+ * Handles the admin logout POST request by clearing the authentication cookie.
+ *
+ * Returns a JSON response indicating success or failure of the logout operation.
+ */
 export async function POST() {
   try {
     await clearAuthCookie();

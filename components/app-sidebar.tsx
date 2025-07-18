@@ -35,6 +35,11 @@ const publicItems = [
 
 const adminItems = [{ title: "Upload Data", url: "/admin", icon: Upload }];
 
+/**
+ * Renders the application sidebar with navigation and user controls based on authentication state.
+ *
+ * Displays public and admin-specific navigation items, and conditionally shows user information, logout, or login options in the footer.
+ */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { user, isLoading, isAuthenticated } = useAuth();

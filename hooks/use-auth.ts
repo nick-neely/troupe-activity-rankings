@@ -13,6 +13,13 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+/**
+ * React hook that provides the current authentication state of the user.
+ *
+ * Fetches session data from the server on mount to determine if a user is authenticated, returning user information, loading status, and authentication status.
+ * 
+ * @returns The current authentication state, including user info, loading status, and authentication status.
+ */
 export function useAuth(): AuthState {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -57,6 +64,11 @@ export function useAuth(): AuthState {
   return authState;
 }
 
+/**
+ * Logs out the current user by sending a logout request and redirects to the home page.
+ *
+ * Ends the user session on the server and forces a full page reload to update authentication state.
+ */
 export async function logout() {
   try {
     await fetch("/api/admin/logout", {
