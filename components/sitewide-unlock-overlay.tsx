@@ -37,8 +37,6 @@ export function SitewideUnlockOverlay() {
       if (data.success) {
         setUnlocked(true);
         setError("");
-        document.cookie =
-          "sitewide_unlocked=true; path=/; max-age=86400; secure; samesite=strict; httponly";
       } else {
         setError(data.error || "Incorrect code. Try again.");
       }

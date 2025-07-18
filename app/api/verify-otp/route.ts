@@ -40,7 +40,12 @@ export async function POST(request: Request) {
     );
   }
   if (timingSafeEqual(Buffer.from(code), Buffer.from(sitewideCode))) {
-    return NextResponse.json({ success: true });
+    const response = NextResponse.json({ success: true });
+    response.headers.set(
+      "Set-Cookie",
+      "sitewide_unlocked=true; Path=/; Max-Age=86400; HttpOnly; Secure; SameSite=Strict"
+    );
+    return response;
   }
   return NextResponse.json(
     { success: false, error: "Incorrect code." },
