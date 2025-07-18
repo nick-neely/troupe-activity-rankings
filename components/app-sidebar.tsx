@@ -82,8 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <div className="px-2 space-y-2">
           {!isLoading && (
-            <>
-              {isAuthenticated && user ? (
+              isAuthenticated && user ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <User className="w-4 h-4" />
@@ -106,8 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     Admin Login
                   </Link>
                 </Button>
-              )}
-            </>
+              )
           )}
           <span className="text-xs text-muted-foreground">© 2025 Troupe</span>
         </div>

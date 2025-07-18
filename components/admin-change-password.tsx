@@ -2,10 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function AdminChangePasswordForm() {
+  const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +27,7 @@ export function AdminChangePasswordForm() {
         setCurrentPassword("");
         setNewPassword("");
         setTimeout(() => {
-          window.location.href = "/admin/login";
+          router.push("/admin/login");
         }, 1500);
       } else {
         toast.error(data.error || "Failed to change password");

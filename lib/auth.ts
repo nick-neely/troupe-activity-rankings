@@ -46,8 +46,6 @@ export async function setAuthCookie(user: User) {
   const token = await generateToken(user);
   const cookieStore = await cookies();
 
-  console.log("Setting auth cookie for user:", user.username);
-
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

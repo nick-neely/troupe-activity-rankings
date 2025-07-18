@@ -26,14 +26,17 @@ export default function AdminLogin() {
 
       if (response.ok) {
         toast.success("Login successful!");
-        // Use router.push with a refresh instead of hard redirect
+        // Use window.location.replace with a refresh instead of hard redirect
         window.location.replace("/admin");
       } else {
         const data = await response.json();
         toast.error(data.error || "Login failed");
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error(
+        "Change password error:",
+        error instanceof Error ? error.message : "Unknown error"
+      );
       toast.error("An error occurred during login");
     } finally {
       setIsLoading(false);
@@ -87,7 +90,7 @@ export default function AdminLogin() {
               credentials
             </p>
           </div>
-        )}{" "}
+        )}
       </div>
     </div>
   );

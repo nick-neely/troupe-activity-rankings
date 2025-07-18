@@ -1,11 +1,7 @@
 "use client";
 
+import type { User } from "@/lib/db/schema";
 import { useEffect, useState } from "react";
-
-interface User {
-  id: string;
-  username: string;
-}
 
 interface AuthState {
   user: User | null;

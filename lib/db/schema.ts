@@ -1,4 +1,5 @@
 import {
+  index,
   integer,
   pgTable,
   real,
@@ -9,12 +10,16 @@ import {
 import { z } from "zod";
 
 // Users table - stores admin user credentials
-export const users = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  username: text("username").unique().notNull(),
-  passwordHash: text("password_hash").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    username: text("username").unique().notNull(),
+    passwordHash: text("password_hash").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [index("idx_users_username").on(table.username)]
+);
 
 // Activity uploads table - stores metadata about CSV uploads
 export const activityUploads = pgTable("activity_uploads", {
