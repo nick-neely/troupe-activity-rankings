@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthUserFromRequest } from "./lib/auth";
 
+/**
+ * Middleware for handling authentication and access control for admin and upload routes.
+ *
+ * Intercepts requests to admin pages and the upload API, enforcing authentication. Redirects authenticated users away from the login page to the admin dashboard, and redirects unauthenticated users attempting to access protected routes to the login page. Allows unauthenticated access to the login page.
+ *
+ * @returns A NextResponse that either allows the request to proceed or redirects based on authentication status and route.
+ */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 

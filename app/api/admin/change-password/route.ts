@@ -15,6 +15,13 @@ const changePasswordSchema = z.object({
   newPassword: z.string().min(8, "New password must be at least 8 characters"),
 });
 
+/**
+ * Handles POST requests to change the authenticated user's password with rate limiting and validation.
+ *
+ * Validates the request body, enforces a maximum of 5 attempts per 10 minutes per user or IP, verifies the current password, updates the password hash in the database, and forces logout upon success.
+ *
+ * @returns A JSON response indicating success or an error with the appropriate HTTP status code.
+ */
 export async function POST(request: NextRequest) {
   try {
     // Identify user/IP for rate limiting

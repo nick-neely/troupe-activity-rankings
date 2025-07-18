@@ -20,6 +20,12 @@ export interface JWTPayload {
   exp: number;
 }
 
+/**
+ * Generates a signed JWT token for the given user with a 7-day expiration.
+ *
+ * @param user - The user for whom the token is generated
+ * @returns A signed JWT string containing the user's ID and username
+ */
 export async function generateToken(user: User): Promise<string> {
   const payload = { userId: user.id, username: user.username };
   const jwt = await new SignJWT(payload)
@@ -30,6 +36,12 @@ export async function generateToken(user: User): Promise<string> {
   return jwt;
 }
 
+/**
+ * Verifies a JWT token and returns its decoded payload if valid.
+ *
+ * @param token - The JWT string to verify
+ * @returns The decoded payload if the token is valid, or `null` if verification fails
+ */
 export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
     const { payload } = (await jwtVerify(token, SECRET)) as {
@@ -42,6 +54,11 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
   }
 }
 
+/**
+ * Sets an HTTP-only authentication cookie for the specified user.
+ *
+ * Generates a JWT for the user and stores it as a secure cookie named "admin_token" with a 7-day expiration.
+ */
 export async function setAuthCookie(user: User) {
   const token = await generateToken(user);
   const cookieStore = await cookies();
@@ -55,11 +72,19 @@ export async function setAuthCookie(user: User) {
   });
 }
 
+/**
+ * Removes the authentication cookie from the user's browser, effectively logging out the user.
+ */
 export async function clearAuthCookie() {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
 }
 
+/**
+ * Retrieves and verifies the current user's authentication token from cookies.
+ *
+ * @returns The decoded JWT payload if a valid token is present; otherwise, null.
+ */
 export async function getAuthUser(): Promise<JWTPayload | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
@@ -67,6 +92,12 @@ export async function getAuthUser(): Promise<JWTPayload | null> {
   return await verifyToken(token);
 }
 
+/**
+ * Retrieves and verifies the authentication JWT from the provided Next.js request.
+ *
+ * @param request - The Next.js request object containing cookies
+ * @returns The decoded JWT payload if the token is valid, or null if missing or invalid
+ */
 export async function getAuthUserFromRequest(
   request: NextRequest
 ): Promise<JWTPayload | null> {

@@ -205,7 +205,14 @@ export async function uploadActivitiesWithTransaction(
   });
 }
 
-// Clean up old uploads (optional utility)
+/**
+ * Deletes an activity upload record by its ID.
+ *
+ * Throws an error if the upload ID is missing or if the upload does not exist.
+ *
+ * @param uploadId - The unique identifier of the activity upload to delete
+ * @returns The result of the deletion operation
+ */
 export async function deleteActivityUpload(uploadId: string) {
   if (!uploadId) {
     throw new Error("Upload ID is required for deletion");
@@ -226,7 +233,15 @@ export async function deleteActivityUpload(uploadId: string) {
   return result;
 }
 
-// User Operations
+/**
+ * Creates a new user with the specified username and password.
+ *
+ * The password is securely hashed before storage.
+ *
+ * @param username - The username for the new user
+ * @param password - The plaintext password for the new user
+ * @returns The created user record
+ */
 export async function createUser(username: string, password: string) {
   const saltRounds = 12;
   const passwordHash = await bcrypt.hash(password, saltRounds);
@@ -242,6 +257,12 @@ export async function createUser(username: string, password: string) {
   return user;
 }
 
+/**
+ * Retrieves a user by their username.
+ *
+ * @param username - The username to search for
+ * @returns The user object if found, otherwise null
+ */
 export async function getUserByUsername(
   username: string
 ): Promise<User | null> {
@@ -254,6 +275,15 @@ export async function getUserByUsername(
   return user || null;
 }
 
+/**
+ * Verifies a user's password and returns the user if authentication succeeds.
+ *
+ * Retrieves the user by username and compares the provided password with the stored password hash. Returns the user object if the password is valid; otherwise, returns null.
+ *
+ * @param username - The username of the user to authenticate
+ * @param password - The plaintext password to verify
+ * @returns The authenticated user if the password is correct, or null if authentication fails
+ */
 export async function validateUserPassword(
   username: string,
   password: string
@@ -265,7 +295,13 @@ export async function validateUserPassword(
   return isValid ? user : null;
 }
 
-// Initialize admin user (run once)
+/**
+ * Ensures that an admin user exists by creating one with a default password if necessary.
+ *
+ * If an admin user already exists, returns the existing user. If not, creates an admin user using the password from the `ADMIN_DEFAULT_PASSWORD` environment variable. Throws an error if the environment variable is not set.
+ *
+ * @returns The existing or newly created admin user
+ */
 export async function initializeAdminUser() {
   const existingUser = await getUserByUsername("admin");
   if (existingUser) {

@@ -6,6 +6,11 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * Renders the admin login page with a form for username and password authentication.
+ *
+ * Handles user input, form submission, and authentication requests to the server. Displays success or error notifications and redirects to the admin panel upon successful login. Shows a development mode notice with credential guidance when applicable.
+ */
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

@@ -5,6 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 const COOKIE_NAME = "admin_token";
 
+/**
+ * Handles admin login requests by validating credentials and issuing an authentication token.
+ *
+ * Accepts a JSON request body with `username` and `password`, verifies the credentials, and returns user information with an authentication cookie on success. Responds with appropriate error messages and status codes on failure.
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

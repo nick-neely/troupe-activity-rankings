@@ -6,6 +6,11 @@ import { useActivityStore } from "@/lib/store";
 import { BarChart3, Database, Download } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * Displays and manages activity data, including statistics, export functionality, and password management.
+ *
+ * Renders loading and empty states as appropriate. When activity data is available, shows summary statistics, provides a CSV export option, and includes a password change form.
+ */
 export function DataManagement() {
   const { data: activities, isLoading } = useActivities(true);
   const { getTotalStats } = useActivityStore();

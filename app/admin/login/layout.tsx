@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   description: "Admin login for Troupe Activity Dashboard",
 };
 
+/**
+ * Provides the layout for the admin login page, rendering its children and a toast notification system.
+ *
+ * @param children - The content to display within the admin login layout
+ */
 export default function AdminLoginLayout({
   children,
 }: {

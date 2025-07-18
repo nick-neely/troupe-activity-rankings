@@ -6,6 +6,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * Renders a form for admins to change their password.
+ *
+ * Submits the current and new passwords to the server, displays success or error notifications, and redirects to the admin login page upon successful password change.
+ */
 export function AdminChangePasswordForm() {
   const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState("");
