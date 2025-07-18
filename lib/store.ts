@@ -2,6 +2,34 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ActivityData } from "./db/schema";
 
+// Sitewide password unlock store
+interface UnlockStore {
+  unlocked: boolean;
+  setUnlocked: (unlocked: boolean) => void;
+  resetUnlock: () => void;
+  hydrated: boolean;
+  setHydrated: (hydrated: boolean) => void;
+}
+
+export const useUnlockStore = create<UnlockStore>()(
+  persist(
+    (set) => ({
+      unlocked: false,
+      hydrated: false,
+      setUnlocked: (unlocked: boolean) => set({ unlocked }),
+      resetUnlock: () => set({ unlocked: false }),
+      setHydrated: (hydrated: boolean) => set({ hydrated }),
+    }),
+    {
+      name: "unlock-store",
+      partialize: (state: UnlockStore) => ({ unlocked: state.unlocked }),
+      onRehydrateStorage: () => (state) => {
+        if (state) state.setHydrated(true);
+      },
+    }
+  )
+);
+
 interface ActivityStore {
   activities: ActivityData[];
   isLoaded: boolean;
