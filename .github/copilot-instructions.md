@@ -2,53 +2,53 @@
 
 ## Project Overview
 
-- **Framework**: Next.js 14 App Router project in the `app/` directory.
-- **Language**: TypeScript and React (all components live under `components/`, TSX files).
-- **Styling**: Tailwind CSS with `clsx` + `twMerge` helper (`lib/utils.ts`).
-- **State Management**: Zustand store with persistence middleware (`lib/store.ts`).
-- **Data Source**: CSV upload parsed by `lib/utils.ts` → `ActivityData[]`.
+- **Next.js 14 (App Router)**: Server components by default in `app/`; interactive UI marked with `"use client"` at the top of TSX files.
+- **TypeScript & React**: Domain components under `components/` (kebab-case filenames, named exports); UI primitives in `components/ui/`.
+- **Styling**: Tailwind CSS; use the `cn(...)` helper (`lib/utils.ts`) to combine `clsx` + `twMerge`.
+- **State Management**: Zustand store in `lib/store.ts` with localStorage persistence; core selectors like `getTopActivities`, `getCategoryStats`.
+- **Data Flow**: CSV upload → parse CSV (`lib/utils.ts`) → `useActivityStore.setActivities` → components: `StatsCards`, `TopActivities`, `CategoryChart`, `ActivitiesTable`.
 
 ## Architecture & Data Flow
 
-1. **Entry Point**: `app/page.tsx` (client component, marked with `"use client"`).
-2. On mount, CSV data is loaded (via `components/upload-form.tsx`) and fed into `useActivityStore.setActivities`.
-3. Shared store hook (`useActivityStore`) drives downstream components:
-   - `StatsCards` (summary metrics)
-   - `TopActivities` (sorted list)
-   - `CategoryChart` (stats by category)
-   - `ActivitiesTable` (full list with sorting/filtering)
-4. Store selectors include `getTopActivities`, `getCategoryStats`, `getTotalStats`, etc.
+1. **Client vs Server**: Files in `app/` without `"use client"` run on the server. Add `"use client"` to enable hooks, state, and suspense in UI components.
+2. **CSV Upload**: `components/upload-form.tsx` sends file to `/api/upload`; backend parses CSV, inserts into DB, and returns `ActivityData[]` to client.
+3. **Zustand Store**: `useActivityStore` in `lib/store.ts` holds activities; UI reads slices via selectors and React Table.
+4. **Category Icon Mappings**: Admin UI (`components/category-icon-manager.tsx`) uses `useCategoryMappings` hook to GET/POST `/api/category-mappings`.
+5. **Drizzle ORM**: DB schema in `lib/db/schema.ts`, migrations in `db/migrations/`; query helpers in `lib/db/queries.ts`.
+6. **API Routes**: Next.js Route Handlers under `app/api/*` (activities, admin, upload, auth, verify-otp, session, etc.).
 
 ## Components & Conventions
 
-- **Domain Components**: `components/*.tsx` (kebab-case filenames, named exports).
-- **UI Primitives**: `components/ui/` folder with reusable inputs, buttons, menus, etc.
-- **Custom Hooks**: `hooks/` (e.g., `use-mobile.ts` for responsive behavior).
-- **File Imports**: Use `@/` alias (configured in `tsconfig.json`).
+- **Domain vs UI**: Split feature components (`components/`) from primitives (`components/ui/`). Follow kebab-case for filenames.
+- **Import Aliases**: Use `@/...` to reference `app/`, `components/`, `lib/`, `hooks/`.
+- **Client Components**: Declare `"use client"` at top when using state or browser APIs.
+- **Dynamic Icons**: Category icons use `React.lazy` + `Suspense` with dynamic imports from `lucide-react`.
 
-## Styling & Utility Functions
+## Utilities & Helpers
 
-- **Tailwind Config**: See `tailwind.config.js` & `postcss.config.mjs`.
-- **ClassName Merge**: `cn(...inputs)` in `lib/utils.ts` wraps `clsx` + `twMerge`.
-- **CSV Parsing**: Robust parser in `lib/utils.ts` (`parseCSVData`).
+- **CSV Parser**: `parseCSVData` in `lib/utils.ts` returns validated records via Zod schemas.
+- **ClassName Merge**: `cn(...)` merges Tailwind classes seamlessly.
+- **Rate Limiting**: `lib/rateLimit.ts` applied in API routes to throttle requests.
+- **Authentication**: Custom OTP flow under `app/api/verify-otp` and session management under `app/api/session`.
 
 ## Development Workflow
 
-- **Install Dependencies**: `npm install`
-- **Run Dev Server**: `npm run dev` (Windows PowerShell)
-- **Build**: `npm run build`
-- **Start Production**: `npm start`
-- **ESLint**: `npm run lint` (uses `eslint.config.mjs`)
-- **Type Checks**: `npm run type-check` if scripted
+- **Install**: `npm install`
+- **Local Dev**: `npm run dev` (PowerShell: join commands with `;` if chaining).
+- **Production Build**: `npm run build && npm start`
+- **Linting**: `npm run lint` uses `eslint.config.mjs`; autofix with `--fix`.
+- **Type Checking**: `npm run type-check` is available but TS errors appear live in VS Code.
+- **Database**: Apply migrations with `npm run migrate` (if script exists) or `npx drizzle-kit migrate`.
 
 ## Key Files & Folders
 
-- `app/` – Next.js pages, layouts
-- `components/` – Feature components & UI primitives under `components/ui`
-- `lib/` – Store (`store.ts`) & utility (`utils.ts`) modules
-- `hooks/` – Custom React hooks
-- `public/` – Static assets (SVGs, favicon)
-- `next.config.ts` – Next.js config (path aliases, configs)
+- `app/` – Next.js layouts, pages, and API routes. Default server components; add `"use client"` for hooks.
+- `components/` – Domain UI. `components/ui/` for primitive controls (buttons, inputs, table).
+- `lib/store.ts` – Zustand store with persistence and selectors.
+- `lib/utils.ts` – Helpers: `cn`, `parseCSVData`, upload/file validations.
+- `lib/db/` – Drizzle schema (`schema.ts`), queries (`queries.ts`), migrations (`migrations/`).
+- `hooks/` – Data-fetching hooks (`useCategoryMappings`, `use-activities`, `use-auth`).
+- `app/api/` – Route handlers (activities, upload, auth, admin, category-mappings).
 
 ---
 
