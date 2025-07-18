@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/empty-state";
 import { StatsCards } from "@/components/stats-cards";
 import { TopActivities } from "@/components/top-activities";
 import { useActivities } from "@/hooks/use-activities";
+import { LoaderCircle } from "lucide-react";
 
 export default function Dashboard() {
   const { data: activities, isLoading, error } = useActivities(true); // Get latest activities
@@ -13,7 +14,7 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <LoaderCircle className="animate-spin h-10 w-10 text-primary" />
       </div>
     );
   }

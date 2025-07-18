@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { useUnlockStore } from "@/lib/store";
+import { LoaderCircle } from "lucide-react";
 import React from "react";
 
 export function UnlockGate({ children }: { children: React.ReactNode }) {
@@ -19,7 +20,7 @@ export function UnlockGate({ children }: { children: React.ReactNode }) {
   if (!hydrated) {
     return (
       <div className="fixed inset-0 bg-slate-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <LoaderCircle className="animate-spin h-10 w-10 text-primary" />
       </div>
     );
   }
