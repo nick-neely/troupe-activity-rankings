@@ -43,7 +43,8 @@ export function SitewideUnlockOverlay() {
         setError(data.error || "Incorrect code. Try again.");
       }
     } catch (err) {
-      setError("Server error. Please try again.");
+      console.error("OTP verification failed:", err);
+      setError("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -92,7 +93,10 @@ export function SitewideUnlockOverlay() {
           >
             {loading ? (
               <span className="flex items-center gap-2 justify-center">
-                <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-1"></span>
+                <span
+                  className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-1"
+                  aria-hidden="true"
+                ></span>
                 Unlocking...
               </span>
             ) : (
