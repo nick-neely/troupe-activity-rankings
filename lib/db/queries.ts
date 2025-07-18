@@ -4,9 +4,12 @@ import {
   activities,
   Activity,
   activityUploads,
+  appConfig,
+  categoryIconMappings,
   db,
   users,
   type ActivityData,
+  type CategoryIconMapping,
   type NewActivity,
   type NewActivityUpload,
   type User,
@@ -319,4 +322,160 @@ export async function initializeAdminUser() {
   );
   // Do not log the password
   return adminUser;
+}
+
+// Category Icon Mapping Operations
+
+/**
+ * Gets all category icon mappings from the database.
+ *
+ * @returns Array of category icon mappings
+ */
+export async function getCategoryIconMappings(): Promise<
+  CategoryIconMapping[]
+> {
+  return await db
+    .select()
+    .from(categoryIconMappings)
+    .orderBy(categoryIconMappings.category);
+}
+
+/**
+ * Creates or updates a category icon mapping.
+ *
+ * @param category - The category name
+ * @param iconName - The icon name to map to the category
+ * @returns The created or updated mapping
+ */
+export async function setCategoryIconMapping(
+  category: string,
+  iconName: string
+): Promise<CategoryIconMapping> {
+  if (!category || !iconName) {
+    throw new Error("Category and iconName are required");
+  }
+
+  const [result] = await db
+    .insert(categoryIconMappings)
+    .values({
+      category,
+      iconName,
+    })
+    .onConflictDoUpdate({
+      target: categoryIconMappings.category,
+      set: {
+        iconName,
+        updatedAt: new Date(),
+      },
+    })
+    .returning();
+
+  if (!result) {
+    throw new Error("Failed to create category icon mapping");
+  }
+
+  return result;
+}
+
+/**
+ * Gets a single category icon mapping by category name.
+ *
+ * @param category - The category name to look up
+ * @returns The mapping if found, null otherwise
+ */
+export async function getCategoryIconMapping(
+  category: string
+): Promise<CategoryIconMapping | null> {
+  if (!category) {
+    return null;
+  }
+
+  const [mapping] = await db
+    .select()
+    .from(categoryIconMappings)
+    .where(eq(categoryIconMappings.category, category))
+    .limit(1);
+
+  return mapping || null;
+}
+
+/**
+ * Initializes default category icon mappings for common categories.
+ * Only creates mappings that don't already exist.
+ *
+ * @returns Array of created mappings (if any)
+ */
+export async function initializeDefaultCategoryMappings(): Promise<
+  CategoryIconMapping[]
+> {
+  const defaultMappings = [
+    { category: "Food", iconName: "UtensilsCrossed" },
+    { category: "Entertainment", iconName: "Music" },
+    { category: "Recreation", iconName: "Zap" },
+    { category: "Outdoors", iconName: "Trees" },
+    { category: "Wellness", iconName: "Heart" },
+    { category: "Dining", iconName: "ChefHat" },
+    { category: "Gaming", iconName: "Gamepad2" },
+    { category: "Movies", iconName: "Film" },
+    { category: "Sports", iconName: "Trophy" },
+    { category: "Shopping", iconName: "ShoppingBag" },
+  ];
+
+  const createdMappings: CategoryIconMapping[] = [];
+  const errors: Array<{ category: string; error: unknown }> = [];
+
+  for (const mapping of defaultMappings) {
+    const existing = await getCategoryIconMapping(mapping.category);
+    if (!existing) {
+      try {
+        const created = await setCategoryIconMapping(
+          mapping.category,
+          mapping.iconName
+        );
+        createdMappings.push(created);
+      } catch (error) {
+        console.warn(
+          `Failed to create default mapping for ${mapping.category}:`,
+          error
+        );
+        errors.push({ category: mapping.category, error });
+      }
+      if (errors.length > 0) {
+        console.error("Some default mappings failed to initialize:", errors);
+      }
+    }
+  }
+
+  return createdMappings;
+}
+
+export async function getCategoryMappingsInitializedFlag(): Promise<boolean> {
+  const result = await db
+    .select()
+    .from(appConfig)
+    .where(eq(appConfig.key, "categoryMappingsInitialized"))
+    .limit(1);
+  return result.length > 0 && JSON.parse(result[0].value || "false");
+}
+
+export async function setCategoryMappingsInitializedFlag(
+  value: boolean
+): Promise<void> {
+  // Upsert the flag
+  const exists = await db
+    .select()
+    .from(appConfig)
+    .where(eq(appConfig.key, "categoryMappingsInitialized"))
+    .limit(1);
+  if (exists.length > 0) {
+    await db
+      .update(appConfig)
+      .set({ value: JSON.stringify(value) })
+      .where(eq(appConfig.key, "categoryMappingsInitialized"));
+  } else {
+    await db.insert(appConfig).values({
+      key: "categoryMappingsInitialized",
+      value: JSON.stringify(value),
+    });
+  }
 }

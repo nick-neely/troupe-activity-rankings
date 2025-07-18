@@ -4,7 +4,7 @@ import { getAuthUserFromRequest } from "./lib/auth";
 /**
  * Middleware for handling authentication and access control for admin and upload routes.
  *
- * Intercepts requests to admin pages and the upload API, enforcing authentication. Redirects authenticated users away from the login page to the admin dashboard, and redirects unauthenticated users attempting to access protected routes to the login page. Allows unauthenticated access to the login page.
+ * Intercepts requests to admin pages, upload API, and category mappings API, enforcing authentication. Redirects authenticated users away from the login page to the admin dashboard, and redirects unauthenticated users attempting to access protected routes to the login page. Allows unauthenticated access to the login page.
  *
  * @returns A NextResponse that either allows the request to proceed or redirects based on authentication status and route.
  */
@@ -14,6 +14,7 @@ export async function middleware(request: NextRequest) {
   // Check if the path requires authentication
   const isAdminPath = pathname.startsWith("/admin");
   const isUploadAPI = pathname.startsWith("/api/upload");
+  const isCategoryMappingsAPI = pathname.startsWith("/api/category-mappings");
   const isLoginPage = pathname === "/admin/login";
 
   // Get user authentication status
@@ -31,7 +32,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check authentication for admin paths and upload API
-  if (isAdminPath || isUploadAPI) {
+  if (isAdminPath || isUploadAPI || isCategoryMappingsAPI) {
     if (!user) {
       // Redirect to login page
       const loginUrl = new URL("/admin/login", request.url);
@@ -43,7 +44,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/upload/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/api/upload/:path*",
+    "/api/category-mappings/:path*",
+  ],
 };
 
 export const runtime = "nodejs";

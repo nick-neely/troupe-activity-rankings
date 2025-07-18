@@ -1,0 +1,108 @@
+import {
+  Bike,
+  Book,
+  Camera,
+  Car,
+  ChefHat,
+  Coffee,
+  Crown,
+  Dumbbell,
+  Film,
+  Flame,
+  Gamepad2,
+  Gift,
+  Heart,
+  IceCream,
+  MapPin,
+  Mountain,
+  Music,
+  Palette,
+  Pizza,
+  Plane,
+  ShoppingBag,
+  Sparkles,
+  Star,
+  Sun,
+  Tag,
+  Tent,
+  Ticket,
+  Trees,
+  Trophy,
+  UtensilsCrossed,
+  Waves,
+  Zap,
+} from "lucide-react";
+
+export const availableIcons = [
+  {
+    group: "Food & Dining",
+    icons: [
+      {
+        name: "UtensilsCrossed",
+        icon: UtensilsCrossed,
+        label: "General Dining",
+      },
+      { name: "Coffee", icon: Coffee, label: "Cafes & Coffee" },
+      { name: "Pizza", icon: Pizza, label: "Casual Dining" },
+      { name: "ChefHat", icon: ChefHat, label: "Fine Dining" },
+      { name: "IceCream", icon: IceCream, label: "Desserts & Treats" },
+    ],
+  },
+  {
+    group: "Entertainment",
+    icons: [
+      { name: "Music", icon: Music, label: "Concerts & Music" },
+      { name: "Gamepad2", icon: Gamepad2, label: "Gaming & Arcades" },
+      { name: "Film", icon: Film, label: "Movies & Cinema" },
+      { name: "Ticket", icon: Ticket, label: "Events & Shows" },
+      { name: "Palette", icon: Palette, label: "Arts & Culture" },
+      { name: "Crown", icon: Crown, label: "Premium Entertainment" },
+    ],
+  },
+  {
+    group: "Recreation & Sports",
+    icons: [
+      { name: "Zap", icon: Zap, label: "General Fun" },
+      { name: "Dumbbell", icon: Dumbbell, label: "Fitness & Gym" },
+      { name: "Bike", icon: Bike, label: "Sports & Activities" },
+      { name: "Trophy", icon: Trophy, label: "Competitive Sports" },
+      { name: "Sparkles", icon: Sparkles, label: "Special Activities" },
+    ],
+  },
+  {
+    group: "Outdoors & Nature",
+    icons: [
+      { name: "Trees", icon: Trees, label: "Parks & Nature" },
+      { name: "Mountain", icon: Mountain, label: "Hiking & Mountains" },
+      { name: "Waves", icon: Waves, label: "Water Activities" },
+      { name: "Sun", icon: Sun, label: "Beach & Sunny" },
+      { name: "Tent", icon: Tent, label: "Camping & Outdoors" },
+    ],
+  },
+  {
+    group: "Wellness & Health",
+    icons: [
+      { name: "Heart", icon: Heart, label: "Health & Wellness" },
+      { name: "Star", icon: Star, label: "Premium Wellness" },
+      { name: "Flame", icon: Flame, label: "Intensive Training" },
+    ],
+  },
+  {
+    group: "Travel & Shopping",
+    icons: [
+      { name: "MapPin", icon: MapPin, label: "Locations & Travel" },
+      { name: "Car", icon: Car, label: "Transportation" },
+      { name: "Plane", icon: Plane, label: "Travel & Tours" },
+      { name: "Camera", icon: Camera, label: "Sightseeing" },
+      { name: "ShoppingBag", icon: ShoppingBag, label: "Shopping" },
+      { name: "Gift", icon: Gift, label: "Special Experiences" },
+    ],
+  },
+  {
+    group: "General & Other",
+    icons: [
+      { name: "Tag", icon: Tag, label: "General Category" },
+      { name: "Book", icon: Book, label: "Educational" },
+    ],
+  },
+];

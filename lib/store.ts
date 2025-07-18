@@ -35,6 +35,7 @@ interface ActivityStore {
   isLoaded: boolean;
   setActivities: (activities: ActivityData[]) => void;
   clearActivities: () => void;
+  getAvailableCategories: () => string[];
   getTopActivities: (limit?: number) => ActivityData[];
   getCategoryStats: () => Array<{
     category: string;
@@ -93,6 +94,14 @@ export const useActivityStore = create<ActivityStore>()(
 
       clearActivities: () => {
         set({ activities: [], isLoaded: false });
+      },
+
+      getAvailableCategories: () => {
+        const { activities } = get();
+        const categories = Array.from(
+          new Set(activities.map((a) => a.category).filter(Boolean))
+        );
+        return categories.sort();
       },
 
       getTopActivities: (limit = 10) => {
@@ -309,7 +318,7 @@ export const useActivityStore = create<ActivityStore>()(
     }),
     {
       name: "activity-store",
-      // Only persist the activities and isLoaded state
+      // Persist activities and isLoaded state only
       partialize: (state) => ({
         activities: state.activities,
         isLoaded: state.isLoaded,

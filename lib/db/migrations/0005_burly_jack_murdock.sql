@@ -1,0 +1,1 @@
+CREATE INDEX "idx_activities_category" ON "activities" USING btree ("category");
