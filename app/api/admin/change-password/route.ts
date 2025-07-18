@@ -1,14 +1,11 @@
 import { clearAuthCookie, getAuthUserFromRequest } from "@/lib/auth";
 import { db, users } from "@/lib/db";
 import { getUserByUsername } from "@/lib/db/queries";
+import { checkRateLimit } from "@/lib/rateLimit";
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
-const RATE_LIMIT_MAX_ATTEMPTS = 5;
-const rateLimitMap = new Map<string, { count: number; firstAttempt: number }>();
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
@@ -30,26 +27,11 @@ export async function POST(request: NextRequest) {
     const userKey = auth ? `user:${auth.username}` : `ip:${ip}`;
 
     // Rate limit check
-    const now = Date.now();
-    const entry = rateLimitMap.get(userKey);
-    if (entry) {
-      if (now - entry.firstAttempt < RATE_LIMIT_WINDOW_MS) {
-        if (entry.count >= RATE_LIMIT_MAX_ATTEMPTS) {
-          return NextResponse.json(
-            {
-              error:
-                "Too many password change attempts. Please try again later.",
-            },
-            { status: 429 }
-          );
-        }
-        entry.count++;
-      } else {
-        // Window expired, reset
-        rateLimitMap.set(userKey, { count: 1, firstAttempt: now });
-      }
-    } else {
-      rateLimitMap.set(userKey, { count: 1, firstAttempt: now });
+    const { limited, error: rateError } = await checkRateLimit({
+      key: userKey,
+    });
+    if (limited) {
+      return NextResponse.json({ error: rateError }, { status: 429 });
     }
 
     if (!auth) {
