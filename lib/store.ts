@@ -160,7 +160,7 @@ export const useActivityStore = create<ActivityStore>()(
         // Group activities by price ranges
         const priceRanges = {
           Free: activities.filter(
-            (a) => a.price === "Free" || a.price === "$0" || a.price === "N/A"
+            (a) => a.price === "Free" || a.price === "$0"
           ),
           "Budget ($1-25)": activities.filter((a) => {
             const price = a.price.replace(/[^0-9.-]/g, "");
