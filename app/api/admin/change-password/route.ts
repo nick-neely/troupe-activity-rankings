@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const userKey = auth ? `user:${auth.username}` : `ip:${ip}`;
 
     // Rate limit check
-    const { limited, error: rateError } = checkRateLimit({
+    const { limited, error: rateError } = await checkRateLimit({
       key: userKey,
     });
     if (limited) {

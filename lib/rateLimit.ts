@@ -1,32 +1,15 @@
 // lib/rateLimit.ts
 
-interface RateLimitEntry {
-  count: number;
-  firstAttempt: number;
-}
+import { RateLimiterMemory } from "rate-limiter-flexible";
 
-const rateLimitMap = new Map<string, RateLimitEntry>();
+// Default config: 5 attempts per 10 minutes
+const DEFAULT_POINTS = 5;
+const DEFAULT_DURATION = 10 * 60; // seconds
 
-// Cleanup expired entries every 10 minutes
-const CLEANUP_INTERVAL_MS = 10 * 60 * 1000;
-
-/**
- * Cleans up expired entries from the `rateLimitMap`.
- *
- * Iterates through all entries in the map and removes those whose
- * time window has expired, determined by comparing the current time
- * with the `firstAttempt` timestamp and the `CLEANUP_INTERVAL_MS` threshold.
- */
-function cleanupRateLimitMap() {
-  const now = Date.now();
-  for (const [key, entry] of rateLimitMap.entries()) {
-    // Remove if window expired
-    if (now - entry.firstAttempt > CLEANUP_INTERVAL_MS) {
-      rateLimitMap.delete(key);
-    }
-  }
-}
-setInterval(cleanupRateLimitMap, CLEANUP_INTERVAL_MS);
+const rateLimiter = new RateLimiterMemory({
+  points: DEFAULT_POINTS,
+  duration: DEFAULT_DURATION,
+});
 
 /**
  * Checks if a key is currently rate limited based on attempt count within a time window.
@@ -39,37 +22,32 @@ setInterval(cleanupRateLimitMap, CLEANUP_INTERVAL_MS);
  * @example
  * ```ts
  * const { limited, error } = checkRateLimit({ key: 'user:123' });
- * if (limited) {
- *   return res.status(429).json({ error });
- * }
  * ```
  */
-export function checkRateLimit({
-  key,
-  maxAttempts = 5,
-  windowMs = 10 * 60 * 1000,
-}: {
+export async function checkRateLimit(params: {
   key: string;
   maxAttempts?: number;
-  windowMs?: number;
-}): { limited: boolean; error?: string } {
-  const now = Date.now();
-  const entry = rateLimitMap.get(key);
-  if (entry) {
-    if (now - entry.firstAttempt < windowMs) {
-      if (entry.count >= maxAttempts) {
-        return {
-          limited: true,
-          error: `Too many attempts. Please try again later.`,
-        };
-      }
-      rateLimitMap.set(key, { ...entry, count: entry.count + 1 });
-    } else {
-      // Window expired, reset
-      rateLimitMap.set(key, { count: 1, firstAttempt: now });
-    }
-  } else {
-    rateLimitMap.set(key, { count: 1, firstAttempt: now });
+  windowSeconds?: number;
+}): Promise<{ limited: boolean; error?: string }> {
+  const {
+    key,
+    maxAttempts = DEFAULT_POINTS,
+    windowSeconds = DEFAULT_DURATION,
+  } = params;
+
+  // Use custom limits if provided, otherwise use default limiter
+  const limiter =
+    maxAttempts !== DEFAULT_POINTS || windowSeconds !== DEFAULT_DURATION
+      ? new RateLimiterMemory({ points: maxAttempts, duration: windowSeconds })
+      : rateLimiter;
+
+  try {
+    await limiter.consume(key, 1);
+    return { limited: false };
+  } catch {
+    return {
+      limited: true,
+      error: `Too many attempts. Please try again later.`,
+    };
   }
-  return { limited: false };
 }
