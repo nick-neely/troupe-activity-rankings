@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/empty-state";
 import { StatsCards } from "@/components/stats-cards";
 import { TopActivities } from "@/components/top-activities";
 import { useActivities } from "@/hooks/use-activities";
+import { LoaderCircle } from "lucide-react";
 
 export default function Dashboard() {
   const { data: activities, isLoading, error } = useActivities(true); // Get latest activities
@@ -13,7 +14,7 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <LoaderCircle className="animate-spin h-10 w-10 text-primary" />
       </div>
     );
   }
@@ -36,9 +37,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
           Trip Activity Dashboard
         </h1>
         <p className="text-slate-600">
@@ -51,7 +52,7 @@ export default function Dashboard() {
       <StatsCards />
 
       {/* Top Section: Top Activities and Category Performance */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-2">
           <TopActivities />
         </div>
@@ -61,10 +62,10 @@ export default function Dashboard() {
       </div>
 
       {/* Full Activities Table */}
-      <div className="space-y-4 overflow-hidden">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900">
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900">
               All Activities
             </h2>
             <p className="text-slate-600">

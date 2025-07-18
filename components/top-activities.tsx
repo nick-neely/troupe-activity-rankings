@@ -19,7 +19,7 @@ export function TopActivities() {
           ? Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-50 rounded-2xl gap-3"
               >
                 <div className="flex items-center gap-4">
                   <Skeleton className="w-8 h-8 rounded-xl" />
@@ -28,7 +28,7 @@ export function TopActivities() {
                     <Skeleton className="h-3 w-20" />
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 justify-between sm:justify-end">
                   <Skeleton className="h-6 w-12" />
                   <Skeleton className="h-6 w-12" />
                   <Skeleton className="h-6 w-8" />
@@ -38,7 +38,7 @@ export function TopActivities() {
           : topActivities.map((activity, index) => (
               <div
                 key={activity.name}
-                className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-50 rounded-2xl gap-3"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl text-sm font-semibold font-mono">
@@ -53,7 +53,7 @@ export function TopActivities() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 justify-between sm:justify-end">
                   <div className="flex items-center gap-1 text-pink-600">
                     <Heart className="w-4 h-4" />
                     <span className="text-sm font-medium font-mono">

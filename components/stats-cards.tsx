@@ -11,7 +11,7 @@ export function StatsCards() {
 
   if (!isLoaded) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
@@ -66,7 +66,7 @@ export function StatsCards() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       {statItems.map((stat) => (
         <div
           key={stat.name}
