@@ -141,7 +141,7 @@ export async function getTopActivities(
 }
 
 // Transactional upload and insert
-export async function uploadActivitiesWithTransaction(
+export async function uploadActivities(
   uploadData: Omit<NewActivityUpload, "id" | "uploadedAt">,
   activitiesData: ActivityData[]
 ) {
@@ -157,52 +157,51 @@ export async function uploadActivitiesWithTransaction(
     );
   }
 
-  return await db.transaction(async (tx) => {
-    const [upload] = await tx
-      .insert(activityUploads)
-      .values(uploadData)
-      .returning();
-    if (!upload) throw new Error("Failed to create upload record");
+  // Insert upload record
+  const [upload] = await db
+    .insert(activityUploads)
+    .values(uploadData)
+    .returning();
+  if (!upload) throw new Error("Failed to create upload record");
 
-    if (activitiesData.length === 0) return { upload, insertedActivities: [] };
+  if (activitiesData.length === 0) return { upload, insertedActivities: [] };
 
-    for (const activity of activitiesData) {
-      if (!activity.name || !activity.category) {
-        throw new Error(
-          `Invalid activity data: name and category are required for activity: ${JSON.stringify(
-            activity
-          )}`
-        );
-      }
-    }
-
-    const activitiesToInsert = activitiesData.map((activity) => ({
-      uploadId: upload.id,
-      name: activity.name,
-      category: activity.category,
-      price: activity.price || "N/A",
-      loveVotes: activity.love_votes,
-      likeVotes: activity.like_votes,
-      passVotes: activity.pass_votes,
-      score: activity.score || 0,
-      groupNames: activity.groupNames,
-      websiteLink: activity.website_link,
-      googleMapsUrl: activity.google_maps_url,
-    }));
-
-    const insertedActivities = await tx
-      .insert(activities)
-      .values(activitiesToInsert)
-      .returning();
-
-    if (insertedActivities.length !== activitiesData.length) {
+  for (const activity of activitiesData) {
+    if (!activity.name || !activity.category) {
       throw new Error(
-        `Insert failed: expected ${activitiesData.length} activities, inserted ${insertedActivities.length}`
+        `Invalid activity data: name and category are required for activity: ${JSON.stringify(
+          activity
+        )}`
       );
     }
+  }
 
-    return { upload, insertedActivities };
-  });
+  const activitiesToInsert = activitiesData.map((activity) => ({
+    uploadId: upload.id,
+    name: activity.name,
+    category: activity.category,
+    price: activity.price || "N/A",
+    loveVotes: activity.love_votes,
+    likeVotes: activity.like_votes,
+    passVotes: activity.pass_votes,
+    score: activity.score || 0,
+    groupNames: activity.groupNames,
+    websiteLink: activity.website_link,
+    googleMapsUrl: activity.google_maps_url,
+  }));
+
+  const insertedActivities = await db
+    .insert(activities)
+    .values(activitiesToInsert)
+    .returning();
+
+  if (insertedActivities.length !== activitiesData.length) {
+    throw new Error(
+      `Insert failed: expected ${activitiesData.length} activities, inserted ${insertedActivities.length}`
+    );
+  }
+
+  return { upload, insertedActivities };
 }
 
 /**
