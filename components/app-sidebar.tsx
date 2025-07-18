@@ -72,7 +72,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive}>
-                      <Link href={item.url} className="flex items-center gap-3">
+                      <Link
+                        href={item.url}
+                        className="flex items-center gap-3 rounded-xl transition-colors duration-100 md:h-10 h-14 px-4 w-full text-base md:text-sm md:px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                      >
                         <item.icon className="w-5 h-5" />
                         <span>{item.title}</span>
                       </Link>
@@ -86,32 +89,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <div className="px-2 space-y-2">
-          {!isLoading && (
-              isAuthenticated && user ? (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <User className="w-4 h-4" />
-                    <span>Admin: {user.username}</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="w-full"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
-                  </Button>
+          {!isLoading &&
+            (isAuthenticated && user ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <User className="w-4 h-4" />
+                  <span>Admin: {user.username}</span>
                 </div>
-              ) : (
-                <Button variant="outline" size="sm" asChild className="w-full">
-                  <Link href="/admin/login">
-                    <User className="w-4 h-4 mr-2" />
-                    Admin Login
-                  </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="w-full h-14 md:h-10 text-base md:text-sm rounded-xl"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
                 </Button>
-              )
-          )}
+              </div>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="w-full h-14 md:h-10 text-base md:text-sm rounded-xl"
+              >
+                <Link href="/admin/login">
+                  <User className="w-4 h-4 mr-2" />
+                  Admin Login
+                </Link>
+              </Button>
+            ))}
           <span className="text-xs text-muted-foreground">© 2025 Troupe</span>
         </div>
       </SidebarFooter>

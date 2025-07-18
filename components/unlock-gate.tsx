@@ -4,11 +4,14 @@ import { ActivitySync } from "@/components/activity-sync";
 import { AppSidebar } from "@/components/app-sidebar";
 import { QueryProvider } from "@/components/query-provider";
 import { SitewideUnlockOverlay } from "@/components/sitewide-unlock-overlay";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { useUnlockStore } from "@/lib/store";
 import React from "react";
-import MainLayout from "./main-layout";
 
 export function UnlockGate({ children }: { children: React.ReactNode }) {
   const { hydrated, unlocked } = useUnlockStore();
@@ -28,7 +31,14 @@ export function UnlockGate({ children }: { children: React.ReactNode }) {
       <ActivitySync>
         <SidebarProvider>
           <AppSidebar />
-          <MainLayout>{children}</MainLayout>
+          <SidebarInset>
+            <div className="p-4 md:p-6">
+              <div className="mb-6">
+                <SidebarTrigger className="h-8 w-8 rounded-md border border-slate-200 bg-white hover:bg-slate-50" />
+              </div>
+              {children}
+            </div>
+          </SidebarInset>
           <Toaster />
         </SidebarProvider>
       </ActivitySync>

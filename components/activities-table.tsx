@@ -424,9 +424,6 @@ const columns: ColumnDef<ActivityData>[] = [
             {(activity.website_link || activity.google_maps_url) && (
               <DropdownMenuSeparator />
             )}
-            <DropdownMenuItem className="rounded-xl">
-              View details
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -499,135 +496,137 @@ export function ActivitiesTable() {
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+        <div className="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-2">
           <Input
             placeholder="Filter activities..."
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm rounded-2xl border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
+            className="w-full md:max-w-sm rounded-2xl border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
           />
 
-          {/* Category Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="rounded-2xl border-slate-300 bg-transparent"
-              >
-                Categories
+          <div className="flex items-center space-x-2 w-full">
+            {/* Category Filter */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex-1 rounded-2xl border-slate-300 bg-transparent"
+                >
+                  Categories
+                  {selectedCategoryFilter.length > 0 && (
+                    <Badge variant="secondary" className="ml-2 rounded-xl">
+                      {selectedCategoryFilter.length}
+                    </Badge>
+                  )}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 rounded-2xl">
+                <DropdownMenuLabel>Filter by Category</DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 {selectedCategoryFilter.length > 0 && (
-                  <Badge variant="secondary" className="ml-2 rounded-xl">
-                    {selectedCategoryFilter.length}
-                  </Badge>
+                  <>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        table.getColumn("category")?.setFilterValue(undefined)
+                      }
+                      className="rounded-xl text-red-600"
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      Clear filters
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
                 )}
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 rounded-2xl">
-              <DropdownMenuLabel>Filter by Category</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {selectedCategoryFilter.length > 0 && (
-                <>
-                  <DropdownMenuItem
-                    onClick={() =>
-                      table.getColumn("category")?.setFilterValue(undefined)
-                    }
-                    className="rounded-xl text-red-600"
+                {categories.map((category) => (
+                  <DropdownMenuCheckboxItem
+                    key={category}
+                    className="rounded-xl"
+                    checked={selectedCategoryFilter.includes(category)}
+                    onCheckedChange={(checked) => {
+                      const currentFilter = selectedCategoryFilter;
+                      const newFilter = checked
+                        ? [...currentFilter, category]
+                        : currentFilter.filter((c) => c !== category);
+                      table
+                        .getColumn("category")
+                        ?.setFilterValue(
+                          newFilter.length > 0 ? newFilter : undefined
+                        );
+                    }}
                   >
-                    <X className="mr-2 h-4 w-4" />
-                    Clear filters
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              {categories.map((category) => (
-                <DropdownMenuCheckboxItem
-                  key={category}
-                  className="rounded-xl"
-                  checked={selectedCategoryFilter.includes(category)}
-                  onCheckedChange={(checked) => {
-                    const currentFilter = selectedCategoryFilter;
-                    const newFilter = checked
-                      ? [...currentFilter, category]
-                      : currentFilter.filter((c) => c !== category);
-                    table
-                      .getColumn("category")
-                      ?.setFilterValue(
-                        newFilter.length > 0 ? newFilter : undefined
-                      );
-                  }}
-                >
-                  {category}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                    {category}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {/* Group Names Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="rounded-2xl border-slate-300 bg-transparent"
-              >
-                Groups
-                {selectedGroupFilter.length > 0 && (
-                  <Badge variant="secondary" className="ml-2 rounded-xl">
-                    {selectedGroupFilter.length}
-                  </Badge>
-                )}
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 rounded-2xl">
-              <DropdownMenuLabel>Filter by Group</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {selectedGroupFilter.length > 0 && (
-                <>
-                  <DropdownMenuItem
-                    onClick={() =>
-                      table.getColumn("groupNames")?.setFilterValue(undefined)
-                    }
-                    className="rounded-xl text-red-600"
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    Clear filters
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              {groupNames.map((group) => (
-                <DropdownMenuCheckboxItem
-                  key={group}
-                  className="rounded-xl"
-                  checked={selectedGroupFilter.includes(group)}
-                  onCheckedChange={(checked) => {
-                    const currentFilter = selectedGroupFilter;
-                    const newFilter = checked
-                      ? [...currentFilter, group]
-                      : currentFilter.filter((g) => g !== group);
-                    table
-                      .getColumn("groupNames")
-                      ?.setFilterValue(
-                        newFilter.length > 0 ? newFilter : undefined
-                      );
-                  }}
+            {/* Group Names Filter */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex-1 rounded-2xl border-slate-300 bg-transparent"
                 >
-                  {group}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  Groups
+                  {selectedGroupFilter.length > 0 && (
+                    <Badge variant="secondary" className="ml-2 rounded-xl">
+                      {selectedGroupFilter.length}
+                    </Badge>
+                  )}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 rounded-2xl">
+                <DropdownMenuLabel>Filter by Group</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {selectedGroupFilter.length > 0 && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        table.getColumn("groupNames")?.setFilterValue(undefined)
+                      }
+                      className="rounded-xl text-red-600"
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      Clear filters
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                {groupNames.map((group) => (
+                  <DropdownMenuCheckboxItem
+                    key={group}
+                    className="rounded-xl"
+                    checked={selectedGroupFilter.includes(group)}
+                    onCheckedChange={(checked) => {
+                      const currentFilter = selectedGroupFilter;
+                      const newFilter = checked
+                        ? [...currentFilter, group]
+                        : currentFilter.filter((g) => g !== group);
+                      table
+                        .getColumn("groupNames")
+                        ?.setFilterValue(
+                          newFilter.length > 0 ? newFilter : undefined
+                        );
+                    }}
+                  >
+                    {group}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="ml-auto rounded-2xl border-slate-300 bg-transparent"
+              className="w-full md:w-auto rounded-2xl border-slate-300 bg-transparent"
             >
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
@@ -654,91 +653,95 @@ export function ActivitiesTable() {
         </DropdownMenu>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-x-auto w-full">
-        <Table className="min-w-max">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-slate-200">
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className="font-semibold text-slate-700"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-slate-200 hover:bg-slate-50"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+      <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
+          <Table className="w-full min-w-[600px]">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id} className="border-slate-200">
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className="font-semibold text-slate-700 whitespace-nowrap px-2 md:px-4"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="border-slate-200 hover:bg-slate-50"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="px-2 md:px-4 py-2">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex-1 text-sm text-slate-600">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+      <div className="py-4">
+        {/* Pagination buttons row (now above info row) */}
+        <div className="grid grid-cols-2 gap-2 md:flex md:items-center md:justify-end md:space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="rounded-2xl h-12 text-base px-6 md:h-8 md:text-sm md:px-4"
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="rounded-2xl h-12 text-base px-6 md:h-8 md:text-sm md:px-4"
+          >
+            Next
+          </Button>
         </div>
-        <div className="flex items-center space-x-2">
+        {/* Info row: selected rows and page info (now below buttons) */}
+        <div className="mt-2 flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0 md:items-center md:justify-between">
+          <div className="text-sm text-slate-600">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
           <p className="text-sm font-medium text-slate-700">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </p>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className="rounded-2xl"
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className="rounded-2xl"
-            >
-              Next
-            </Button>
-          </div>
         </div>
       </div>
     </div>
