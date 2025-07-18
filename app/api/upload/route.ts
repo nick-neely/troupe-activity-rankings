@@ -1,4 +1,4 @@
-import { uploadActivitiesWithTransaction } from "@/lib/db/queries";
+import { uploadActivities } from "@/lib/db/queries";
 import { type ActivityData } from "@/lib/db/schema";
 import { calculateScore, parseCSVData } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
@@ -37,15 +37,14 @@ export async function POST(request: NextRequest) {
     }));
 
     // Create upload record and insert activities in a transaction
-    const { upload, insertedActivities } =
-      await uploadActivitiesWithTransaction(
-        {
-          fileName: file.name,
-          totalActivities: parsedActivities.length,
-          description: description || undefined,
-        },
-        dbActivities
-      );
+    const { upload, insertedActivities } = await uploadActivities(
+      {
+        fileName: file.name,
+        totalActivities: parsedActivities.length,
+        description: description || undefined,
+      },
+      dbActivities
+    );
 
     return NextResponse.json(
       {

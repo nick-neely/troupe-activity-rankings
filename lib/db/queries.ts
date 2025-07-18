@@ -141,7 +141,7 @@ export async function getTopActivities(
 }
 
 // Transactional upload and insert
-export async function uploadActivitiesWithTransaction(
+export async function uploadActivities(
   uploadData: Omit<NewActivityUpload, "id" | "uploadedAt">,
   activitiesData: ActivityData[]
 ) {
