@@ -3,9 +3,9 @@
 import { ActivitiesTable } from "@/components/activities-table";
 import { CategoryChart } from "@/components/category-chart";
 import { EmptyState } from "@/components/empty-state";
-import { ScoreDistributionChart } from "@/components/score-distribution-chart";
 import { StatsCards } from "@/components/stats-cards";
 import { TopActivities } from "@/components/top-activities";
+import { VoteDistributionChart } from "@/components/vote-distribution-chart";
 import { useActivities } from "@/hooks/use-activities";
 import { LoaderCircle } from "lucide-react";
 
@@ -59,7 +59,7 @@ export default function Dashboard() {
         </div>
         <div className="lg:col-span-1 space-y-6">
           <CategoryChart />
-          <ScoreDistributionChart />
+          <VoteDistributionChart />
         </div>
       </div>
 
