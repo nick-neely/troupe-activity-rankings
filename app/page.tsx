@@ -38,7 +38,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6 md:space-y-8 p-10">
+    <div className="space-y-6 md:space-y-8 p-0 md:p-10">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
           Trip Activity Dashboard
