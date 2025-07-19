@@ -1,27 +1,30 @@
-"use client"
+"use client";
 
-import { useActivityStore } from "@/lib/store"
-import { EmptyState } from "@/components/empty-state"
-import { CategoryLeaders } from "@/components/category-leaders"
-import { BudgetAnalysis } from "@/components/budget-analysis"
-import { GroupDynamics } from "@/components/group-dynamics"
-import { VotingPatterns } from "@/components/voting-patterns"
-import { ScoreDistribution } from "@/components/score-distribution"
-import { ConsensusBuilder } from "@/components/consensus-builder"
+import { BudgetAnalysis } from "@/components/budget-analysis";
+import { CategoryLeaders } from "@/components/category-leaders";
+import { ConsensusBuilder } from "@/components/consensus-builder";
+import { EmptyState } from "@/components/empty-state";
+import { GroupDynamics } from "@/components/group-dynamics";
+import { ScoreDistribution } from "@/components/score-distribution";
+import { VotingPatterns } from "@/components/voting-patterns";
+import { useActivityStore } from "@/lib/store";
 
 export default function AnalyticsPage() {
-  const { activities, isLoaded } = useActivityStore()
+  const { activities, isLoaded } = useActivityStore();
 
   if (!isLoaded || activities.length === 0) {
-    return <EmptyState />
+    return <EmptyState />;
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-0 md:p-10">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Advanced Analytics</h1>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">
+          Advanced Analytics
+        </h1>
         <p className="text-slate-600">
-          Deep insights into your group&apos;s preferences to make better trip planning decisions
+          Deep insights into your group&apos;s preferences to make better trip
+          planning decisions
         </p>
       </div>
 
@@ -39,5 +42,5 @@ export default function AnalyticsPage() {
         <GroupDynamics />
       </div>
     </div>
-  )
+  );
 }

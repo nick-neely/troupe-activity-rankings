@@ -1,6 +1,7 @@
 import { generateToken } from "@/lib/auth";
 import { validateUserPassword } from "@/lib/db/queries";
 import { loginSchema } from "@/lib/db/schema";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { NextRequest, NextResponse } from "next/server";
 
 const COOKIE_NAME = "admin_token";
@@ -11,6 +12,21 @@ const COOKIE_NAME = "admin_token";
  * Accepts a JSON request body with `username` and `password`, verifies the credentials, and returns user information with an authentication cookie on success. Responds with appropriate error messages and status codes on failure.
  */
 export async function POST(request: NextRequest) {
+  // Use IP address for rate limiting key
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { limited, error: rateLimitError } = await checkRateLimit({
+    key: `login:${ip}`,
+  });
+  if (limited) {
+    return NextResponse.json(
+      {
+        error:
+          rateLimitError || "Too many login attempts. Please try again later.",
+      },
+      { status: 429 }
+    );
+  }
   try {
     const body = await request.json();
     const { username, password } = loginSchema.parse(body);
