@@ -8,7 +8,7 @@
 [![Neon](https://img.shields.io/badge/Database-Neon_PostgreSQL-00D9FF?style=flat-square&logo=postgresql)](https://neon.tech)
 [![Drizzle](https://img.shields.io/badge/ORM-Drizzle-C5F74F?style=flat-square)](https://orm.drizzle.team)
 
-A modern web application for analyzing group trip activity data with full database integration using Neon PostgreSQL and Drizzle ORM.
+Troupe Activity Dashboard is a modern web platform designed to make group trip planning and activity selection easy, transparent, and data-driven. It empowers trip planners, event organizers, and decision makers to:
 
 ## ✨ Features
 
@@ -28,6 +28,14 @@ Troupe Scraper Web is a **data visualization dashboard** that turns raw activity
 - **Identify consensus and controversy** across different activities
 - **Make budget-conscious decisions** with price-range breakdowns
 - **Visualize trends** with interactive charts and metrics
+
+## ⚙️ How It Works
+
+1. **CSV Upload**: Easily import your group's activity data. The system checks for errors and guides you on the required format.
+2. **Dashboard & Analytics**: Instantly see top activities, category performance, voting distribution, and budget analysis. All charts and tables update in real time.
+3. **Admin Tools**: Log in securely to access the admin dashboard, upload new data, change your password, and manage category icons. All admin actions are protected by rate limiting and authentication.
+4. **Custom Branding**: Add your own icons and visual touches to categories for a personalized look.
+5. **API Integrations**: All data flows through secure, well-documented API routes for uploads, analytics, authentication, and admin actions.
 
 ## 🚀 Why use it?
 
@@ -53,6 +61,9 @@ Troupe Scraper Web is a **data visualization dashboard** that turns raw activity
 
 ### 📊 **Smart Analytics**
 
+- **Upload and manage activity data** via simple CSV files, with instant validation and feedback.
+- **Analyze voting patterns** to spot consensus, controversy, and budget sweet spots.
+- **Access advanced analytics** for deeper insights into group dynamics, category leaders, and spending trends.
 - **Activity Scoring**: Weighted algorithm (Love: +2, Like: +1, Pass: -1)
 - **Category Performance**: Compare different activity types
 - **Budget Analysis**: Find the best value activities per price range
@@ -60,6 +71,7 @@ Troupe Scraper Web is a **data visualization dashboard** that turns raw activity
 
 ### 📈 **Visual Insights**
 
+- **Visualize group preferences** using interactive charts, top activity lists, and category breakdowns.
 - **Stats Overview**: Total activities, votes, and average scores
 - **Top Performers**: Highest-rated activities at a glance
 - **Category Charts**: Performance breakdown by activity type
@@ -70,6 +82,16 @@ Troupe Scraper Web is a **data visualization dashboard** that turns raw activity
 - **Database Storage**: Activities are persisted in Neon PostgreSQL
 - **Real-time Sync**: Data automatically synchronizes across sessions
 - **Reliable Access**: Your data is always available and backed up
+
+### 🛡️ **Admin & Security**
+
+- **Secure admin dashboard** for managing uploads, reviewing analytics, and changing settings.
+- **Robust authentication** with custom login, OTP unlock, and rate limiting to keep your data safe.
+
+### 🎨 **Customization & Branding**
+
+- **Customize category icons** for a tailored, branded experience.
+- **Category Icon Mapping**: Assign icons to activity categories for instant recognition and branding.
 
 ## 🗄️ Database Setup
 
