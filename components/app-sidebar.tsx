@@ -19,7 +19,6 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
-  TrendingUp,
   Upload,
   User,
 } from "lucide-react";
@@ -29,7 +28,6 @@ import { usePathname } from "next/navigation";
 const publicItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Trends", url: "/trends", icon: TrendingUp },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
@@ -119,7 +117,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </Link>
               </Button>
             ))}
-          <span className="text-xs text-muted-foreground">© 2025 Troupe</span>
+          <span className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Nick Neely
+          </span>
         </div>
       </SidebarFooter>
     </Sidebar>

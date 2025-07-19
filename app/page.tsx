@@ -3,6 +3,7 @@
 import { ActivitiesTable } from "@/components/activities-table";
 import { CategoryChart } from "@/components/category-chart";
 import { EmptyState } from "@/components/empty-state";
+import { ScoreDistributionChart } from "@/components/score-distribution-chart";
 import { StatsCards } from "@/components/stats-cards";
 import { TopActivities } from "@/components/top-activities";
 import { useActivities } from "@/hooks/use-activities";
@@ -37,7 +38,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-6 md:space-y-8 p-10">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
           Trip Activity Dashboard
@@ -56,8 +57,9 @@ export default function Dashboard() {
         <div className="lg:col-span-2">
           <TopActivities />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-6">
           <CategoryChart />
+          <ScoreDistributionChart />
         </div>
       </div>
 

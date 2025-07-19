@@ -116,20 +116,20 @@ export function DataManagement() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col items-center gap-4 w-full md:flex-row md:justify-start md:gap-3">
         <Link
           href="/"
-          className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-2xl text-sm font-medium hover:shadow-lg transition-all duration-200"
+          className="flex items-center justify-center gap-3 w-full py-4 px-6 text-lg font-semibold rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-sm transition-all duration-200 hover:shadow-lg md:w-auto md:py-2 md:px-4 md:text-sm md:font-medium"
         >
-          <BarChart3 className="w-4 h-4" />
+          <BarChart3 className="w-6 h-6 md:w-4 md:h-4" />
           View Dashboard
         </Link>
 
         <button
           onClick={handleExportData}
-          className="flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-2xl text-sm font-medium hover:bg-slate-200 transition-colors duration-200"
+          className="flex items-center justify-center gap-3 w-full py-4 px-6 text-lg font-semibold rounded-2xl bg-slate-100 text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-200 md:w-auto md:py-2 md:px-4 md:text-sm md:font-medium"
         >
-          <Download className="w-4 h-4" />
+          <Download className="w-6 h-6 md:w-4 md:h-4" />
           Export CSV
         </button>
       </div>

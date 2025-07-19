@@ -4,7 +4,7 @@ import React from "react";
 import "../../globals.css";
 
 export const metadata: Metadata = {
-  title: "Admin Login - Troupe Dashboard",
+  title: "Admin Login - Troupe Activity Dashboard",
   description: "Admin login for Troupe Activity Dashboard",
 };
 

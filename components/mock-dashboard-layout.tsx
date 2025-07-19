@@ -73,7 +73,9 @@ function MockSidebar() {
           <User className="w-4 h-4" />
           <span>Admin Login</span>
         </div>
-        <span className="text-xs text-slate-500">© 2025 Troupe</span>
+        <span className="text-xs text-slate-500">
+          © {new Date().getFullYear()} Nick Neely
+        </span>
       </div>
     </div>
   );
