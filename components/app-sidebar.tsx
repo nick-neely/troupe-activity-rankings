@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -49,7 +50,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="inset" className="border-r-0" {...props}>
       <SidebarHeader>
-        <div className="mb-2 px-2">
+        <div className="mb-2 px-2 flex flex-col items-center">
+          <Image
+            src="/icon.png"
+            alt="Troupe Icon"
+            width={64}
+            height={64}
+            className="rounded-full mb-2 shadow"
+            priority
+          />
           <h1 className="text-xl font-bold">Troupe Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Trip Activity Analytics
