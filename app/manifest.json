@@ -1,6 +1,6 @@
 {
   "name": "Troupe Dashboard",
-  "short_name": "Troupe",
+  "short_name": "TripData",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#afc77f",
-  "background_color": "#afc77f",
+  "theme_color": "#d6bfec",
+  "background_color": "#765aa3",
   "display": "standalone"
 }

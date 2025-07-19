@@ -38,7 +38,7 @@ export default async function RootLayout({
       className={`${plusJakartaSans.variable} ${jetBrainsMono.variable}`}
     >
       <head>
-        <meta name="apple-mobile-web-app-title" content="Troupe" />
+        <meta name="apple-mobile-web-app-title" content="Trip Data" />
       </head>
       <body>
         <SidebarProvider defaultOpen={defaultOpen}>
