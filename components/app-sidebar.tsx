@@ -54,9 +54,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <Image
             src="/icon.png"
             alt="Troupe Icon"
-            width={64}
-            height={64}
-            className="rounded-full mb-2 shadow"
+            width={1024}
+            height={1024}
+            className="rounded-full mb-2 shadow w-16 h-16 object-cover"
             priority
           />
           <h1 className="text-xl font-bold">Troupe Dashboard</h1>
