@@ -7,10 +7,9 @@ import {
   LayoutDashboard,
   MapPin,
   Menu,
-  Settings,
+  Shield,
   Star,
   TrendingUp,
-  Upload,
   User,
   Users,
 } from "lucide-react";
@@ -21,10 +20,9 @@ const publicItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Trends", url: "/trends", icon: TrendingUp },
-  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
-const adminItems = [{ title: "Upload Data", url: "/admin", icon: Upload }];
+const adminItems = [{ title: "Admin Dashboard", url: "/admin", icon: Shield }];
 
 // Mock sidebar component
 function MockSidebar() {

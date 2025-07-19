@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -12,26 +14,19 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { logout, useAuth } from "@/hooks/use-auth";
-import {
-  BarChart3,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  Upload,
-  User,
-} from "lucide-react";
+import { BarChart3, LayoutDashboard, LogOut, Shield, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const publicItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
-const adminItems = [{ title: "Upload Data", url: "/admin", icon: Upload }];
+const adminItems = [{ title: "Admin Dashboard", url: "/admin", icon: Shield }];
 
 /**
  * Renders the application sidebar with navigation and user controls based on authentication state.
@@ -42,8 +37,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { user, isLoading, isAuthenticated } = useAuth();
 
+  // Admin dashboard should be last if authenticated
   const allItems = isAuthenticated
-    ? [...publicItems.slice(0, 1), ...adminItems, ...publicItems.slice(1)]
+    ? [...publicItems, ...adminItems]
     : publicItems;
 
   const handleLogout = async () => {
@@ -65,20 +61,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {allItems.map((item) => {
+              {allItems.map((item, idx) => {
                 const isActive = pathname === item.url;
+                // If admin dashboard is present and is last, add separator above it
+                const isAdminItem = item.title === "Admin Dashboard";
+                const isLast = idx === allItems.length - 1 && isAdminItem;
                 return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={isActive}>
-                      <Link
-                        href={item.url}
-                        className="flex items-center gap-3 rounded-xl transition-colors duration-100 md:h-10 h-14 px-4 w-full text-base md:text-sm md:px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                      >
-                        <item.icon className="w-5 h-5" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <React.Fragment key={item.title}>
+                    {isLast && <SidebarSeparator />}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={isActive}>
+                        <Link
+                          href={item.url}
+                          className="flex items-center gap-3 rounded-xl transition-colors duration-100 md:h-10 h-14 px-4 w-full text-base md:text-sm md:px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                        >
+                          <item.icon className="w-5 h-5" />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </React.Fragment>
                 );
               })}
             </SidebarMenu>

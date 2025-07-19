@@ -167,8 +167,6 @@ name,category,price,love_votes,like_votes,pass_votes,website_link,google_maps_ur
 
 - **Dashboard**: Overview of all metrics and top activities
 - **Analytics**: Deep-dive into voting patterns and distributions
-- **Trends**: Historical analysis and category comparisons
-- **Settings**: Manage your data and preferences
 
 ## 🔄 BYOS: Bring Your Own Scraper
 
