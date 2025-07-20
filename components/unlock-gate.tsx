@@ -3,6 +3,7 @@
 import { ActivitySync } from "@/components/activity-sync";
 import { AppSidebar } from "@/components/app-sidebar";
 import { QueryProvider } from "@/components/query-provider";
+import { SidebarPointer } from "@/components/sidebar-pointer";
 import { SitewideUnlockOverlay } from "@/components/sitewide-unlock-overlay";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
@@ -31,8 +32,15 @@ export function UnlockGate({ children }: { children: React.ReactNode }) {
         <AppSidebar />
         <SidebarInset>
           <div className="p-4 md:p-6">
-            <div className="mb-6">
-              <SidebarTrigger className="h-8 w-8 rounded-md border border-slate-200 bg-white hover:bg-slate-50" />
+            <div className="mb-6 relative">
+              <SidebarPointer />
+              <SidebarTrigger
+                className="w-12 h-12 md:w-8 md:h-8 rounded-md border border-slate-200 bg-white hover:bg-slate-50"
+                iconClassName="w-8 h-8 md:w-5 md:h-5"
+                onClick={() => {
+                  window.dispatchEvent(new Event("sidebar-opened"));
+                }}
+              />
             </div>
             {children}
           </div>

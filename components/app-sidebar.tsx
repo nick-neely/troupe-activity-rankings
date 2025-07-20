@@ -20,9 +20,12 @@ import {
 import { logout, useAuth } from "@/hooks/use-auth";
 import {
   BarChart3,
+  Github,
   Info,
   LayoutDashboard,
+  Linkedin,
   LogOut,
+  Mail,
   Shield,
   User,
 } from "lucide-react";
@@ -136,9 +139,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </Link>
               </Button>
             ))}
-          <span className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Nick Neely
-          </span>
+          <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
+            <span>© {new Date().getFullYear()} Nick Neely</span>
+            <div className="flex gap-4 md:gap-2">
+              <a
+                href="https://github.com/nick-neely/troupe-scraper-web"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-muted-foreground hover:text-slate-900 transition-colors"
+                aria-label="GitHub Repository"
+              >
+                <Github className="w-4 h-4" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/nick-neely/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-muted-foreground hover:text-slate-900 transition-colors"
+                aria-label="LinkedIn Profile"
+              >
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a
+                href="mailto:contact@nickneely.dev"
+                className="inline-flex items-center text-muted-foreground hover:text-slate-900 transition-colors"
+                aria-label="Email Nick Neely"
+              >
+                <Mail className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>

@@ -178,6 +178,18 @@
   .animate-caret-blink {
     animation: caret-blink 1.2s linear infinite;
   }
+  @keyframes pointer-horizontal {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(16px);
+    }
+  }
+  .animate-pointer-horizontal {
+    animation: pointer-horizontal 1.2s infinite ease-in-out;
+  }
   * {
     @apply border-border outline-ring/50;
   }
