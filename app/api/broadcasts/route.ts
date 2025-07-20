@@ -1,6 +1,5 @@
 import {
   createBroadcast,
-  deleteBroadcast,
   getAllBroadcasts,
   updateBroadcast,
 } from "@/lib/db/queries";
@@ -65,19 +64,15 @@ export async function POST(request: NextRequest) {
 // PUT /api/broadcasts - Update broadcast
 export async function PUT(request: NextRequest) {
   try {
+    // Parse and validate the complete request first
     const body = await request.json();
-    const { id, ...updateData } = body;
+    const putSchema = z
+      .object({
+        id: z.number().int().positive("Valid broadcast ID is required"),
+      })
+      .extend(broadcastSchema.partial().shape);
 
-    if (!id || typeof id !== "number") {
-      return NextResponse.json(
-        { error: "Valid broadcast ID is required" },
-        { status: 400 }
-      );
-    }
-
-    // Validate the update data (partial)
-    const partialSchema = broadcastSchema.partial();
-    const validatedData = partialSchema.parse(updateData);
+    const { id, ...validatedData } = putSchema.parse(body);
 
     const broadcast = await updateBroadcast(id, validatedData);
 
@@ -96,42 +91,6 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating broadcast:", error);
     return NextResponse.json(
       { error: "Failed to update broadcast" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/broadcasts - Delete broadcast
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const idParam = searchParams.get("id");
-
-    if (!idParam) {
-      return NextResponse.json(
-        { error: "Broadcast ID is required" },
-        { status: 400 }
-      );
-    }
-
-    const id = parseInt(idParam, 10);
-    if (isNaN(id)) {
-      return NextResponse.json(
-        { error: "Valid broadcast ID is required" },
-        { status: 400 }
-      );
-    }
-
-    await deleteBroadcast(id);
-
-    return NextResponse.json({
-      success: true,
-      message: "Broadcast deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting broadcast:", error);
-    return NextResponse.json(
-      { error: "Failed to delete broadcast" },
       { status: 500 }
     );
   }

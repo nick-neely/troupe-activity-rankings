@@ -137,9 +137,17 @@ export function BroadcastForm({
       }
       onSuccess?.();
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Form submission error";
-      toast.error(message);
+      if (error instanceof Error) {
+        if (error.message.includes("duplicate")) {
+          toast.error("A broadcast with this slug already exists");
+        } else if (error.message.includes("validation")) {
+          toast.error("Please check your form data and try again");
+        } else {
+          toast.error(error.message);
+        }
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
       console.error("Form submission error:", error);
     }
   };

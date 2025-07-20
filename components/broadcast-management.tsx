@@ -75,9 +75,16 @@ export function BroadcastManagement() {
   };
 
   const toggleActive = async (broadcast: Broadcast) => {
+    const validLevels = ["info", "warn", "critical"] as const;
+    const level = validLevels.includes(
+      broadcast.level as (typeof validLevels)[number]
+    )
+      ? (broadcast.level as (typeof validLevels)[number])
+      : "info";
+
     await updateMutation.mutateAsync({
       ...broadcast,
-      level: broadcast.level as "info" | "warn" | "critical",
+      level,
       active: !broadcast.active,
     });
   };
@@ -177,7 +184,8 @@ export function BroadcastManagement() {
             ) : (
               data?.broadcasts.map((broadcast) => {
                 const config =
-                  levelConfig[broadcast.level as keyof typeof levelConfig];
+                  levelConfig[broadcast.level as keyof typeof levelConfig] ||
+                  levelConfig.info;
                 const Icon = config.icon;
                 const isExpanded = expandedBroadcast === broadcast.id;
 
@@ -292,7 +300,10 @@ export function BroadcastManagement() {
                               variant="ghost"
                               className="rounded-full text-red-600 hover:text-red-800 focus:ring-2 focus:ring-red-400"
                               onClick={() => setPendingDelete(broadcast)}
-                              disabled={deleteMutation.isPending}
+                              disabled={
+                                deleteMutation.isPending ||
+                                updateMutation.isPending
+                              }
                               aria-label="Delete broadcast"
                             >
                               <Trash2 className="w-5 h-5" />

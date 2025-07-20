@@ -85,13 +85,19 @@ export function useDeleteBroadcast() {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/broadcasts?id=${id}`, {
+      const res = await fetch(`/api/broadcasts/${id}`, {
         method: "DELETE",
       });
 
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Failed to delete broadcast");
+        let errorMessage = "Failed to delete broadcast";
+        try {
+          const error = await res.json();
+          errorMessage = error.error || errorMessage;
+        } catch {
+          // Response is not JSON, use default message
+        }
+        throw new Error(errorMessage);
       }
 
       return res.json();

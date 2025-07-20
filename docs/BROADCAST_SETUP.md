@@ -48,7 +48,7 @@ export const broadcasts = pgTable("broadcasts", {
 });
 ```
 
-Add index in the drizzle schema for active, starts_ad and ends_at:
+Add index in the drizzle schema for active, starts_at and ends_at:
 
 **Version Bump Logic:** On admin save: if `bodyMarkdown`, `title`, `level`, or schedule fields changed → increment `version`.
 
