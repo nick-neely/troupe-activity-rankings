@@ -18,13 +18,21 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { logout, useAuth } from "@/hooks/use-auth";
-import { BarChart3, LayoutDashboard, LogOut, Shield, User } from "lucide-react";
+import {
+  BarChart3,
+  Info,
+  LayoutDashboard,
+  LogOut,
+  Shield,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const publicItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
+  { title: "About", url: "/about", icon: Info },
 ];
 
 const adminItems = [{ title: "Admin Dashboard", url: "/admin", icon: Shield }];

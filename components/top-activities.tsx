@@ -2,7 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useActivityStore } from "@/lib/store";
-import { Heart, ThumbsUp } from "lucide-react";
+import { Heart, Star, ThumbsUp } from "lucide-react";
 
 export function TopActivities() {
   const getTopActivities = useActivityStore((state) => state.getTopActivities);
@@ -41,7 +41,7 @@ export function TopActivities() {
                 className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-50 rounded-2xl gap-3"
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl text-sm font-semibold font-mono">
+                  <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 min-w-8 min-h-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl text-sm font-semibold font-mono">
                     {index + 1}
                   </div>
                   <div>
@@ -66,8 +66,11 @@ export function TopActivities() {
                       {activity.like_votes}
                     </span>
                   </div>
-                  <div className="text-lg font-bold text-slate-900 font-mono">
-                    {activity.score}
+                  <div className="flex items-center gap-1 text-yellow-500">
+                    <Star className="w-4 h-4" />
+                    <span className="text-lg font-bold font-mono text-slate-900">
+                      {activity.score}
+                    </span>
                   </div>
                 </div>
               </div>

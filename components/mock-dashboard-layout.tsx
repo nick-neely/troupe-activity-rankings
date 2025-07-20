@@ -4,6 +4,7 @@ import {
   BarChart3,
   Calendar,
   Heart,
+  Info,
   LayoutDashboard,
   MapPin,
   Menu,
@@ -20,6 +21,7 @@ const publicItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Trends", url: "/trends", icon: TrendingUp },
+  { title: "About", url: "/about", icon: Info },
 ];
 
 const adminItems = [{ title: "Admin Dashboard", url: "/admin", icon: Shield }];
