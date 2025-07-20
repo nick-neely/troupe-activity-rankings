@@ -1,3 +1,4 @@
+import { BroadcastManagement } from "@/components/broadcast-management";
 import { DataManagement } from "@/components/data-management";
 import { UploadForm } from "@/components/upload-form";
 
@@ -12,6 +13,12 @@ export default function AdminPage() {
           Manage your activity data, upload new CSVs, and review group analytics
         </p>
       </div>
+
+      {/* Broadcast Management Section */}
+      <div className="mb-8">
+        <BroadcastManagement />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         <div className="space-y-6 md:space-y-8">
           <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">

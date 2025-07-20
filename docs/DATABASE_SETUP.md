@@ -24,6 +24,7 @@ This application uses [Neon](https://neon.tech) as the PostgreSQL database with 
    ```
 
 2. Update `.env.local` with your Neon connection string:
+
    ```
    DATABASE_URL=postgresql://username:password@hostname/database?sslmode=require
    ```
@@ -63,17 +64,37 @@ Add these scripts to your `package.json`:
 
 ## Database Schema
 
-The application uses two main tables:
+The application uses several main tables:
+
+### `users`
+
+Stores admin user credentials
+Fields: id, username, passwordHash, createdAt
 
 ### `activity_uploads`
 
-- Stores metadata about CSV uploads
-- Fields: id, fileName, uploadedAt, totalActivities, description
+Stores metadata about CSV uploads
+Fields: id, fileName, uploadedAt, totalActivities, description
 
 ### `activities`
 
-- Stores individual activity records from CSV uploads
-- Fields: id, uploadId, name, category, price, votes, scores, links, timestamps
+Stores individual activity records from CSV uploads
+Fields: id, uploadId, name, category, price, loveVotes, likeVotes, passVotes, score, groupNames, websiteLink, googleMapsUrl, createdAt
+
+### `category_icon_mappings`
+
+Stores admin-configured category-to-icon mappings
+Fields: id, category, iconName, createdAt, updatedAt
+
+### `app_config`
+
+Stores persistent flags and settings
+Fields: key, value
+
+### `broadcasts`
+
+Stores site-wide broadcast messages and banners
+Fields: id, slug, title, bodyMarkdown, level, active, version, startsAt, endsAt, createdAt, updatedAt
 
 ## Usage
 
@@ -126,9 +147,11 @@ The Zustand store provides computed analytics from the database data:
 
 1. Ensure DATABASE_URL is set in your production environment
 2. Run migrations during deployment:
+
    ```bash
    npm run db:push
    ```
+
 3. Neon automatically handles connection pooling and scaling
 
 ## Troubleshooting

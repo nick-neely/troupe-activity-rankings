@@ -1,17 +1,20 @@
 import bcrypt from "bcrypt";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, gte, isNull, lte, or, sql } from "drizzle-orm";
 import {
   activities,
   Activity,
   activityUploads,
   appConfig,
+  broadcasts,
   categoryIconMappings,
   db,
   users,
   type ActivityData,
+  type Broadcast,
   type CategoryIconMapping,
   type NewActivity,
   type NewActivityUpload,
+  type NewBroadcast,
   type User,
 } from "./index";
 
@@ -478,4 +481,138 @@ export async function setCategoryMappingsInitializedFlag(
       value: JSON.stringify(value),
     });
   }
+}
+
+export async function getActiveBroadcasts(): Promise<Broadcast[]> {
+  const now = new Date();
+
+  return await db
+    .select()
+    .from(broadcasts)
+    .where(
+      and(
+        eq(broadcasts.active, true),
+        // No start time set, or start time is in the past
+        or(isNull(broadcasts.startsAt), lte(broadcasts.startsAt, now)),
+        // No end time set, or end time is in the future
+        or(isNull(broadcasts.endsAt), gte(broadcasts.endsAt, now))
+      )
+    )
+    .orderBy(desc(broadcasts.updatedAt));
+}
+/**
+ * Creates a new broadcast.
+ *
+ * @param data - The broadcast data to create
+ * @returns The created broadcast
+ */
+export async function createBroadcast(
+  data: Omit<NewBroadcast, "id" | "version" | "createdAt" | "updatedAt">
+): Promise<Broadcast> {
+  const [broadcast] = await db
+    .insert(broadcasts)
+    .values({
+      ...data,
+      version: 1,
+    })
+    .returning();
+
+  if (!broadcast) {
+    throw new Error("Failed to create broadcast");
+  }
+
+  return broadcast;
+}
+
+/**
+ * Updates an existing broadcast and increments version if significant fields changed.
+ *
+ * @param id - The broadcast ID to update
+ * @param data - The updated broadcast data
+ * @returns The updated broadcast
+ */
+export async function updateBroadcast(
+  id: number,
+  data: Partial<Omit<NewBroadcast, "id" | "createdAt" | "updatedAt">>
+): Promise<Broadcast> {
+  const existing = await db
+    .select()
+    .from(broadcasts)
+    .where(eq(broadcasts.id, id))
+    .limit(1);
+
+  if (existing.length === 0) {
+    throw new Error("Broadcast not found");
+  }
+
+  const existingBroadcast = existing[0];
+
+  // Check if significant fields changed (content that would affect display)
+  const significantChanged =
+    (data.title !== undefined && data.title !== existingBroadcast.title) ||
+    (data.bodyMarkdown !== undefined &&
+      data.bodyMarkdown !== existingBroadcast.bodyMarkdown) ||
+    (data.level !== undefined && data.level !== existingBroadcast.level) ||
+    (data.startsAt !== undefined &&
+      data.startsAt?.getTime() !== existingBroadcast.startsAt?.getTime()) ||
+    (data.endsAt !== undefined &&
+      data.endsAt?.getTime() !== existingBroadcast.endsAt?.getTime());
+
+  const [updated] = await db
+    .update(broadcasts)
+    .set({
+      ...data,
+      version: significantChanged
+        ? existingBroadcast.version + 1
+        : existingBroadcast.version,
+      updatedAt: new Date(),
+    })
+    .where(eq(broadcasts.id, id))
+    .returning();
+
+  if (!updated) {
+    throw new Error("Failed to update broadcast");
+  }
+
+  return updated;
+}
+
+/**
+ * Gets all broadcasts (for admin management).
+ *
+ * @returns Array of all broadcasts
+ */
+export async function getAllBroadcasts(): Promise<Broadcast[]> {
+  return await db.select().from(broadcasts).orderBy(desc(broadcasts.updatedAt));
+}
+
+/**
+ * Gets a single broadcast by ID.
+ *
+ * @param id - The broadcast ID
+ * @returns The broadcast if found, null otherwise
+ */
+export async function getBroadcastById(id: number): Promise<Broadcast | null> {
+  const [broadcast] = await db
+    .select()
+    .from(broadcasts)
+    .where(eq(broadcasts.id, id))
+    .limit(1);
+
+  return broadcast || null;
+}
+
+/**
+ * Deletes a broadcast by ID.
+ *
+ * @param id - The broadcast ID to delete
+ * @returns The deletion result
+ */
+export async function deleteBroadcast(id: number) {
+  const existing = await getBroadcastById(id);
+  if (!existing) {
+    throw new Error("Broadcast not found");
+  }
+
+  return await db.delete(broadcasts).where(eq(broadcasts.id, id));
 }
