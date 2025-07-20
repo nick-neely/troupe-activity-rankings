@@ -15,6 +15,9 @@ export async function middleware(request: NextRequest) {
   const isAdminPath = pathname.startsWith("/admin");
   const isUploadAPI = pathname.startsWith("/api/upload");
   const isCategoryMappingsAPI = pathname.startsWith("/api/category-mappings");
+  const isBroadcastAPI =
+    pathname.startsWith("/api/broadcasts") &&
+    !pathname.startsWith("/api/broadcasts/active"); // Exclude public endpoint
   const isLoginPage = pathname === "/admin/login";
 
   // Get user authentication status
@@ -31,8 +34,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check authentication for admin paths and upload API
-  if (isAdminPath || isUploadAPI || isCategoryMappingsAPI) {
+  // Check authentication for admin paths and protected APIs
+  if (isAdminPath || isUploadAPI || isCategoryMappingsAPI || isBroadcastAPI) {
     if (!user) {
       // Redirect to login page
       const loginUrl = new URL("/admin/login", request.url);
@@ -48,6 +51,7 @@ export const config = {
     "/admin/:path*",
     "/api/upload/:path*",
     "/api/category-mappings/:path*",
+    "/api/broadcasts/:path*",
   ],
 };
 

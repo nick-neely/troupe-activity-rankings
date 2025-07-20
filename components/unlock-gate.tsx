@@ -2,6 +2,7 @@
 
 import { ActivitySync } from "@/components/activity-sync";
 import { AppSidebar } from "@/components/app-sidebar";
+import { BroadcastBanners } from "@/components/broadcast-banners";
 import { QueryProvider } from "@/components/query-provider";
 import { SidebarPointer } from "@/components/sidebar-pointer";
 import { SitewideUnlockOverlay } from "@/components/sitewide-unlock-overlay";
@@ -30,7 +31,7 @@ export function UnlockGate({ children }: { children: React.ReactNode }) {
     <QueryProvider>
       <ActivitySync>
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className="relative">
           <div className="p-4 md:p-6">
             <div className="mb-6 relative">
               <SidebarPointer />
@@ -44,6 +45,9 @@ export function UnlockGate({ children }: { children: React.ReactNode }) {
             </div>
             {children}
           </div>
+          <React.Suspense fallback={null}>
+            <BroadcastBanners />
+          </React.Suspense>
         </SidebarInset>
         <Toaster />
       </ActivitySync>

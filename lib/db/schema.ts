@@ -1,8 +1,10 @@
 import {
+  boolean,
   index,
   integer,
   pgTable,
   real,
+  serial,
   text,
   timestamp,
   uuid,
@@ -68,6 +70,28 @@ export const appConfig = pgTable("app_config", {
   value: text("value"),
 });
 
+// Broadcasts table - stores site-wide broadcast messages/banners
+export const broadcasts = pgTable(
+  "broadcasts",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    bodyMarkdown: text("body_markdown").notNull(),
+    level: text("level").notNull().default("info"), // info | warn | critical
+    active: boolean("active").notNull().default(false),
+    version: integer("version").notNull().default(1),
+    startsAt: timestamp("starts_at"),
+    endsAt: timestamp("ends_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("idx_broadcasts_active").on(table.active),
+    index("idx_broadcasts_schedule").on(table.startsAt, table.endsAt),
+  ]
+);
+
 // TypeScript types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -80,6 +104,9 @@ export type NewActivity = typeof activities.$inferInsert;
 
 export type CategoryIconMapping = typeof categoryIconMappings.$inferSelect;
 export type NewCategoryIconMapping = typeof categoryIconMappings.$inferInsert;
+
+export type Broadcast = typeof broadcasts.$inferSelect;
+export type NewBroadcast = typeof broadcasts.$inferInsert;
 
 // Custom types for frontend compatibility
 export type ActivityData = {
@@ -120,3 +147,16 @@ export const loginSchema = z.object({
 });
 
 export type LoginData = z.infer<typeof loginSchema>;
+
+// Broadcast validation schema
+export const broadcastSchema = z.object({
+  slug: z.string().min(1, "Slug is required"),
+  title: z.string().min(1, "Title is required"),
+  bodyMarkdown: z.string().min(1, "Content is required"),
+  level: z.enum(["info", "warn", "critical"]).default("info"),
+  active: z.boolean().default(false),
+  startsAt: z.date().optional().nullable(),
+  endsAt: z.date().optional().nullable(),
+});
+
+export type BroadcastFormData = z.infer<typeof broadcastSchema>;

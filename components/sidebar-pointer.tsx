@@ -51,7 +51,7 @@ export function SidebarPointer() {
   // Position pointer near the sidebar trigger, animate horizontally
   return (
     <div
-      className="absolute top-1.5 left-14 z-50 flex flex-col items-center pointer-events-none"
+      className="absolute top-1.5 left-14 z-[60] flex flex-col items-center pointer-events-none"
       role="presentation"
     >
       <div className="w-10 h-10 relative">

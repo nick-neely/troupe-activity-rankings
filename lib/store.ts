@@ -2,6 +2,40 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ActivityData } from "./db/schema";
 
+// Broadcast dismissal store
+interface BroadcastStore {
+  dismissed: Record<string, number>; // slug -> version dismissed
+  dismiss: (slug: string, version: number) => void;
+  reset: (slug: string) => void;
+  isDismissed: (slug: string, version: number) => boolean;
+}
+
+export const useBroadcastStore = create<BroadcastStore>()(
+  persist(
+    (set, get) => ({
+      dismissed: {},
+      dismiss: (slug, version) =>
+        set((state) => ({
+          dismissed: { ...state.dismissed, [slug]: version },
+        })),
+      reset: (slug) =>
+        set((state) => {
+          const newDismissed = { ...state.dismissed };
+          delete newDismissed[slug];
+          return { dismissed: newDismissed };
+        }),
+      isDismissed: (slug, version) => {
+        const { dismissed } = get();
+        return dismissed[slug] === version;
+      },
+    }),
+    {
+      name: "broadcast-dismissals",
+      partialize: (state) => ({ dismissed: state.dismissed }),
+    }
+  )
+);
+
 // Sitewide password unlock store
 interface UnlockStore {
   unlocked: boolean;
