@@ -10,8 +10,8 @@ export async function DELETE(
 ) {
   try {
     const { id: idParam } = await context.params;
-    const id = parseInt(idParam, 10);
-    if (isNaN(id)) {
+    const id = Number(idParam);
+    if (!Number.isInteger(id) || id <= 0) {
       return NextResponse.json(
         { error: "Valid broadcast ID is required" },
         { status: 400 }

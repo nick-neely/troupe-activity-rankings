@@ -254,7 +254,8 @@ export function BroadcastForm({
                   <FormControl>
                     <Input
                       placeholder="unique-identifier"
-                      disabled={!!broadcast} // Don't allow changing slug for existing broadcasts
+                      disabled={!!broadcast}
+                      className={broadcast ? "bg-muted" : ""}
                       {...field}
                     />
                   </FormControl>
