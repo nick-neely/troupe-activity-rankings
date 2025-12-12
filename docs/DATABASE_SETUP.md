@@ -4,7 +4,15 @@ This application uses [Neon](https://neon.tech) as the PostgreSQL database with 
 
 ## Prerequisites
 
-- Node.js 18+ installed
+- Node.js >=20.9.0 installed
+
+Tip: Use a Node version manager like `nvm` or Volta to pin Node versions. For example:
+
+```bash
+nvm install 20.9.0
+nvm use 20.9.0
+```
+
 - A Neon account (free tier available)
 
 ## Setup Steps
