@@ -2,7 +2,7 @@
 
 > **Transform group decision-making with data-driven activity insights**
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.2.4-black?style=flat-square&logo=next.js)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-15.6.0-black?style=flat-square&logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1.7-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com)
 [![Neon](https://img.shields.io/badge/Database-Neon_PostgreSQL-00D9FF?style=flat-square&logo=postgresql)](https://neon.tech)
@@ -101,8 +101,15 @@ Troupe Scraper Web is a **data visualization dashboard** that turns raw activity
 2. Create a new project and database
 3. Copy your connection string
 
-- Node.js 18+
+- Node.js >=20.9.0
 - npm, yarn, pnpm, or bun
+
+Tip: Use a Node version manager like `nvm` or Volta to pin Node versions. For example:
+
+```bash
+nvm install 20.9.0
+nvm use 20.9.0
+```
 
 ### Configuration
 
@@ -221,7 +228,7 @@ Popular platforms to scrape or export from:
 
 ## 🏗️ Tech Stack
 
-- **Framework**: Next.js 14 with App Router
+- **Framework**: Next.js 15.6.0 with App Router
 - **Language**: TypeScript + React
 - **Styling**: Tailwind CSS v4
 - **State**: Zustand with persistence
